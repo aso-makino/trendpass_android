@@ -21,15 +21,17 @@ public class SampleAsyncActivity extends AsyncBaseActivity{
 
     @Override
     protected JSONObject doInBackground(URL... urls) {
-        JSONObject resJson = super.doInBackground(urls[0]);
+        JSONObject resJson = super.doInBackground(urls);
+        System.out.println(resJson);
         return resJson;
     }
 
     protected void onPostExecute(JSONObject resJson) {
         String result = "";
         try {
+            System.out.println(resJson.getString("str"));
             result = resJson.getString("str");
-            System.out.println(result);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

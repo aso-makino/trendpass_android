@@ -34,10 +34,11 @@ public class SampleMainActivity extends AppCompatActivity {
                 System.out.println(word);
 
                     try {
+                        String ip= getString(R.string.ip);
                         new SampleAsyncActivity(SampleMainActivity.this)
-                            .execute(new URL("http://localhost:8080/testAPI/test?name=" + word));
+                            .execute(new URL("http://"+ip+":8080/testAPI/test?name=" + word));
 
-                        System.out.println("http://localhost/testAPI/test?name=" + word);
+                        System.out.println("http://"+ip+"/testAPI/test?name=" + word);
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }
