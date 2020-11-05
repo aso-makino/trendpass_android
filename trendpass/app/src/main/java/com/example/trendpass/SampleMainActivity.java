@@ -31,14 +31,12 @@ public class SampleMainActivity extends AppCompatActivity {
 
                 EditText eText = (EditText) findViewById(R.id.etword);
                 String word = eText.getText().toString();
-                System.out.println(word);
 
                     try {
                         String ip= getString(R.string.ip);
                         new SampleAsyncActivity(SampleMainActivity.this)
                             .execute(new URL("http://"+ip+":8080/testAPI/test?name=" + word));
 
-                        System.out.println("http://"+ip+"/testAPI/test?name=" + word);
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                     }

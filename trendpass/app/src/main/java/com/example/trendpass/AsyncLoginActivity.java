@@ -6,16 +6,11 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class SampleAsyncActivity extends AsyncBaseActivity{
+public class AsyncLoginActivity extends AsyncBaseActivity {
 
-    public SampleAsyncActivity(Activity activity) {
+    public AsyncLoginActivity(Activity activity) {
         super(activity);
     }
 
@@ -26,15 +21,19 @@ public class SampleAsyncActivity extends AsyncBaseActivity{
     }
 
     protected void onPostExecute(JSONObject resJson) {
-        String result = "";
+        boolean result = false;
         try {
-            result = resJson.getString("result");
+            result = resJson.getBoolean("result");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        TextView tv = activity.findViewById(R.id.messageTextView);
-        tv.setText(result);
+        if (result == false){
+            TextView tv = activity.findViewById(R.id.LoginResultTxtv);
+            tv.setText("ログイン失敗しました。");
+        }
     }
 }
+
+

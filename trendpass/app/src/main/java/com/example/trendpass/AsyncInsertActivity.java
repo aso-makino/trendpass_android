@@ -6,18 +6,13 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class SampleAsyncActivity extends AsyncBaseActivity{
+public class AsyncInsertActivity extends AsyncBaseActivity {
 
-    public SampleAsyncActivity(Activity activity) {
-        super(activity);
-    }
+    public AsyncInsertActivity(Activity activity) {
+    super(activity);
+}
 
     @Override
     protected JSONObject doInBackground(URL... urls) {
@@ -26,15 +21,19 @@ public class SampleAsyncActivity extends AsyncBaseActivity{
     }
 
     protected void onPostExecute(JSONObject resJson) {
-        String result = "";
+        boolean result = false;
         try {
-            result = resJson.getString("result");
+            result = resJson.getBoolean("result");
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        TextView tv = activity.findViewById(R.id.messageTextView);
-        tv.setText(result);
+        TextView tv = activity.findViewById(R.id.InsertResultTxtv);
+        if (result == false){
+            tv.setText("登録失敗しました。");
+        }else{
+            tv.setText("登録成功しました。");
+        }
     }
 }
