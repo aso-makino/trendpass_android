@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.trendpass.async.SampleAsyncActivity;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -35,7 +37,7 @@ public class SampleMainActivity extends AppCompatActivity {
                     try {
                         String ip= getString(R.string.ip);
                         new SampleAsyncActivity(SampleMainActivity.this)
-                            .execute(new URL("http://"+ip+":8080/testAPI/test?name=" + word));
+                            .execute(new URL("http://"+ip+":8080/trendpass/SampleServlet?name=" + word));
 
                     } catch (MalformedURLException e) {
                         e.printStackTrace();

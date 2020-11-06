@@ -1,4 +1,4 @@
-package com.example.trendpass;
+package com.example.trendpass.async;
 
 import android.app.Activity;
 import android.os.AsyncTask;

@@ -1,16 +1,13 @@
-package com.example.trendpass;
+package com.example.trendpass.async;
 
 import android.app.Activity;
 import android.widget.TextView;
 
+import com.example.trendpass.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SampleAsyncActivity extends AsyncBaseActivity{
@@ -28,7 +25,7 @@ public class SampleAsyncActivity extends AsyncBaseActivity{
     protected void onPostExecute(JSONObject resJson) {
         String result = "";
         try {
-            result = resJson.getString("result");
+            result = resJson.getString("str");
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,7 +1,9 @@
-package com.example.trendpass;
+package com.example.trendpass.async;
 
 import android.app.Activity;
 import android.widget.TextView;
+
+import com.example.trendpass.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
