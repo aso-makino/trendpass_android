@@ -31,7 +31,7 @@ public class AsyncLoginActivity extends AsyncBaseActivity {
 
         if (result == false){
             TextView tv = activity.findViewById(R.id.LoginResultTxtv);
-            tv.setText("ログイン失敗しました。");
+            tv.setText("メールアドレス又は、パスワードが間違っています。");
         }
     }
 }

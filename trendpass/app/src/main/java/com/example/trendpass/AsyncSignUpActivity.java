@@ -8,9 +8,9 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
-public class AsyncInsertActivity extends AsyncBaseActivity {
+public class AsyncSignUpActivity extends AsyncBaseActivity {
 
-    public AsyncInsertActivity(Activity activity) {
+    public AsyncSignUpActivity(Activity activity) {
     super(activity);
 }
 
@@ -31,9 +31,9 @@ public class AsyncInsertActivity extends AsyncBaseActivity {
 
         TextView tv = activity.findViewById(R.id.InsertResultTxtv);
         if (result == false){
-            tv.setText("登録失敗しました。");
+            tv.setText("登録に失敗しました。");
         }else{
-            tv.setText("登録成功しました。");
+            tv.setText("登録しました。");
         }
     }
 }
