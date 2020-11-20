@@ -37,7 +37,7 @@ public class GridAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View view;
 
         if (convertView == null) {
@@ -46,32 +46,35 @@ public class GridAdapter extends BaseAdapter {
             view =  convertView;
         }
 
-        ImageView img = view.findViewById(R.id.image_view);
+        ImageView img = view.findViewById(R.id.mypage_image);
         img.setScaleType(ImageView.ScaleType.CENTER_CROP);
 
 
 
         System.out.println(1);
-//        for(HashMap<String,String> spotReview : spotReviewList) {
+        Picasso.with(context)
+                .load(addUrl(position))
+                .resize(500, 500)
+                .placeholder(R.drawable.insert)
+                .error(R.drawable.map)
+                .into(img);
 
-//            String file = spotReview.get("reviewImage");
-            Picasso.with(context)
-                    .load(addUrl(position))
-                    .resize(500, 500)
-                    .placeholder(R.drawable.insert)
-                    .error(R.drawable.map)
-                    .into(img);
 
-//        }
+        view.findViewById(R.id.mypage_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = imageList.get(position) + "が選択されました。";
+                System.out.println(message);
+            }
+        });
 
-        System.out.println(2);
         return view;
     }
 
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "192.168.2.102";
+        String ip = "172.20.90.84";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 imageList.get(number));

@@ -1,8 +1,11 @@
 package com.example.trendpass.async;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trendpass.GridAdapter;
 import com.example.trendpass.R;
@@ -54,7 +57,7 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
 //            }
 
             List<HashMap<String,String>> spotReviewList = new ArrayList<HashMap<String, String>>();
-            String[] image = new String[reviewSize];
+            final String[] image = new String[reviewSize];
 
             for(int i = 0; i < reviewSize; i++){
 
@@ -79,9 +82,8 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
                 spotReviewList.add(spotReview);
 
                 image[i] = reviewImage;
-
-
             }
+
             System.out.println(3);
             // GridViewのインスタンスを生成
             GridView gridview = activity.findViewById(R.id.gridview);
@@ -97,6 +99,7 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
             System.out.println(4);
             // gridViewにadapterをセット
             gridview.setAdapter(adapter);
+            System.out.println("まきの");
 
         } catch (JSONException e) {
             e.printStackTrace();
