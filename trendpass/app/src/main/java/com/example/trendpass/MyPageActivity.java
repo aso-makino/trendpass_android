@@ -1,24 +1,14 @@
 package com.example.trendpass;
 
         import androidx.appcompat.app.AppCompatActivity;
-
-        import android.app.Activity;
-        import android.content.Intent;
         import android.os.Bundle;
-        import android.view.View;
-        import android.widget.ArrayAdapter;
-        import android.widget.Button;
-        import android.widget.EditText;
-        import android.widget.GridView;
-        import android.widget.ImageButton;
-        import android.widget.Toast;
+        import android.widget.ImageView;
 
         import com.example.trendpass.async.AsyncMyPageActivity;
+        import com.squareup.picasso.Picasso;
 
         import java.net.MalformedURLException;
         import java.net.URL;
-        import java.util.ArrayList;
-        import java.util.List;
 
 public class MyPageActivity extends AppCompatActivity {
 
@@ -27,6 +17,11 @@ public class MyPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
 
+        Picasso.with(this)
+                .load(R.drawable.settings)
+                .fit()
+                .centerInside()
+                .into((ImageView) findViewById(R.id.settings_btn));
 
         String userId = "1";
 

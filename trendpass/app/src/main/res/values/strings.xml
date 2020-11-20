@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">trendpass</string>
     <string name="description">picture</string>
+    <string name="myReviewBtn">口コミ</string>
+    <string name="mySpotBtn">スポット</string>
 </resources>

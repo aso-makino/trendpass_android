@@ -1,24 +1,25 @@
 package com.example.trendpass.async;
 
 import android.app.Activity;
-import android.view.View;
-import android.widget.AdapterView;
+
 import android.widget.GridView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ImageView;
+
 
 import com.example.trendpass.GridAdapter;
 import com.example.trendpass.R;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
-import java.util.ArrayList;
+
 import java.util.HashMap;
-import java.util.List;
 
 public class AsyncMyPageActivity extends AsyncBaseActivity {
+
+    private String url = null;
 
     public AsyncMyPageActivity(Activity activity) {
         super(activity);
@@ -26,8 +27,8 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
 
     @Override
     protected JSONObject doInBackground(URL... urls) {
+        this.url = urls[0].toString();
         JSONObject resJson = super.doInBackground(urls);
-        System.out.println("doInback:::::::::::::::::" + resJson);
         return resJson;
     }
 
@@ -42,6 +43,27 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
         String reviewNumber = "";
         String reviewImage = "";
 
+        String userId = "";
+        String userIcon = "";
+
+        // ユーザーの情報
+        try {
+            userId = resJson.getJSONObject("userInfo").getString("userId");
+            userIcon = resJson.getJSONObject("userInfo").getString("userIcon");
+
+            Picasso.with(activity.getApplicationContext())
+                    .load(url.replace("/MyPageServlet?userId=" + userId,"/DisplayImage?name=" + userIcon))
+                            .resize(500,500)
+                            .placeholder(R.drawable.user)
+                            .centerInside()
+                            .into((ImageView) activity.findViewById(R.id.user_icon));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        //　投稿の情報
         try {
             int spotSize = resJson.getInt("spotSize");
             int reviewSize = resJson.getInt("reviewSize");
@@ -56,7 +78,6 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
 //
 //            }
 
-            List<HashMap<String,String>> spotReviewList = new ArrayList<HashMap<String, String>>();
             final String[] image = new String[reviewSize];
 
             for(int i = 0; i < reviewSize; i++){
@@ -79,8 +100,6 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
                 spotReview.put("reviewNumber",reviewNumber);
                 spotReview.put("reviewImage",reviewImage);
 
-                spotReviewList.add(spotReview);
-
                 image[i] = reviewImage;
             }
 
@@ -99,7 +118,6 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
             System.out.println(4);
             // gridViewにadapterをセット
             gridview.setAdapter(adapter);
-            System.out.println("まきの");
 
         } catch (JSONException e) {
             e.printStackTrace();
