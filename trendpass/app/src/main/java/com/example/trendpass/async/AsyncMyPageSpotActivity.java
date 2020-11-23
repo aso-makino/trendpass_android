@@ -4,6 +4,7 @@ import android.app.Activity;
 
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 
 import com.example.trendpass.GridAdapter;
@@ -17,11 +18,11 @@ import java.net.URL;
 
 import java.util.HashMap;
 
-public class AsyncMyPageActivity extends AsyncBaseActivity {
+public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
 
     private String url = null;
 
-    public AsyncMyPageActivity(Activity activity) {
+    public AsyncMyPageSpotActivity(Activity activity) {
         super(activity);
     }
 
@@ -44,19 +45,26 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
         String reviewImage = "";
 
         String userId = "";
+        String userName = "";
         String userIcon = "";
 
         // ユーザーの情報
         try {
             userId = resJson.getJSONObject("userInfo").getString("userId");
+            userName = resJson.getJSONObject("userInfo").getString("userName");
             userIcon = resJson.getJSONObject("userInfo").getString("userIcon");
 
+            //　ユーザー名表示
+            TextView userNameTxv = activity.findViewById(R.id.userNameTxv);
+            userNameTxv.setText(userName);
+
+            //　ユーザーアイコン表示
             Picasso.with(activity.getApplicationContext())
                     .load(url.replace("/MyPageServlet?userId=" + userId,"/DisplayImage?name=" + userIcon))
-                            .resize(500,500)
-                            .placeholder(R.drawable.user)
-                            .centerInside()
-                            .into((ImageView) activity.findViewById(R.id.user_icon));
+                    .resize(500,500)
+                    .placeholder(R.drawable.user)
+                    .centerInside()
+                    .into((ImageView) activity.findViewById(R.id.user_icon));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -67,16 +75,16 @@ public class AsyncMyPageActivity extends AsyncBaseActivity {
         try {
             int spotSize = resJson.getInt("spotSize");
             int reviewSize = resJson.getInt("reviewSize");
-//
-//            for(int i = 0; i < spotSize; i++){
-//                JSONObject spotList = resJson.getJSONArray("spotList").getJSONObject(i);
-//                spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
-//                spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
-//                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
-//                longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
-//                genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
-//
-//            }
+
+            for(int i = 0; i < spotSize; i++){
+                JSONObject spotList = resJson.getJSONArray("spotList").getJSONObject(i);
+                spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
+                spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
+                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
+                longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
+                genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
+
+            }
 
             final String[] image = new String[reviewSize];
 

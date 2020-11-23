@@ -4,7 +4,7 @@ package com.example.trendpass;
         import android.os.Bundle;
         import android.widget.ImageView;
 
-        import com.example.trendpass.async.AsyncMyPageActivity;
+        import com.example.trendpass.async.AsyncMyPageReviewActivity;
         import com.squareup.picasso.Picasso;
 
         import java.net.MalformedURLException;
@@ -27,7 +27,7 @@ public class MyPageActivity extends AppCompatActivity {
 
         try {
             String ip= getString(R.string.ip);
-            new AsyncMyPageActivity(MyPageActivity.this)
+            new AsyncMyPageReviewActivity(MyPageActivity.this)
                     .execute(new URL("http://"+ip+":8080/trendpass/MyPageServlet?userId=" + userId));
 
         } catch (MalformedURLException e) {
