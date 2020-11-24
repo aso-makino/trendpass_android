@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DispSpotDetailActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ReviewDetailActivity"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -17,7 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:context=".MainActivity"
         tools:ignore="MissingConstraints">
 
         <!-- 別のレイアウトファイルを挿入 -->
@@ -26,16 +26,17 @@
     </LinearLayout>
 
     <ImageView
-        android:id="@+id/spotImg"
+        android:id="@+id/reviewImg"
         android:layout_width="166dp"
         android:layout_height="128dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rogoImg"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.01999998" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/rogoImg"
@@ -51,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="32dp"
         android:backgroundTint="@color/ratingbar"
         android:isIndicator="true"
         android:numStars="5"
@@ -61,7 +62,7 @@
         android:stepSize="1"
         android:theme="@style/Gnt.RatingBar.Small"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/spotImg"
+        app:layout_constraintEnd_toStartOf="@+id/reviewImg"
         app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spotName"
@@ -73,42 +74,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/spotImg"
+        app:layout_constraintEnd_toStartOf="@+id/reviewImg"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rogoImg"
         app:layout_constraintVertical_bias="0.0" />
 
-    <ListView
-        android:id="@+id/reviewList"
+    <TextView
+        android:id="@+id/reviewContent"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="32dp"
+        android:layout_weight="1"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/route_button"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/reviewImg"
+        app:layout_constraintVertical_bias="0.0" />
 
-    </ListView>
 
-    <Button
-        android:id="@+id/route_button"
-        android:layout_width="60dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/shapebutton"
-        android:text="経路"
-        android:textColor="#fff"
-        android:textSize="12dp"
-        app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/ratingBar"
-        app:layout_constraintTop_toBottomOf="@+id/spotImg" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

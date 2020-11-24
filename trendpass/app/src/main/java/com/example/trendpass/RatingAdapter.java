@@ -1,10 +1,12 @@
 package com.example.trendpass;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -45,7 +47,6 @@ public class RatingAdapter extends BaseAdapter {
             holder.reviewRating = convertView.findViewById(R.id.reviewRatingBar);
             holder.reviewContent = convertView.findViewById(R.id.reviewContent);
 
-
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -54,6 +55,7 @@ public class RatingAdapter extends BaseAdapter {
         holder.reviewRating.setRating(reviewRatingList[position]);
 
         holder.reviewContent.setText(reviewContentList[position]);
+
 
         return convertView;
     }
