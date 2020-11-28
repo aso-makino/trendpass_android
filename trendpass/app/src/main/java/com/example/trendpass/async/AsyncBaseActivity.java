@@ -37,7 +37,6 @@ public class AsyncBaseActivity extends  AsyncTask<URL, Void, JSONObject>  {
 
             final int statusCode = con.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
-                System.err.println("正常に接続できていません。statusCode:" + statusCode);
                 return null;
             }
 
