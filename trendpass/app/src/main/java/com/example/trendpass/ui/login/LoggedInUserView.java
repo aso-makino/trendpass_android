@@ -4,14 +4,25 @@ package com.example.trendpass.ui.login;
  * Class exposing authenticated user details to the UI.
  */
 class LoggedInUserView {
-    private String displayName;
-    //... other data fields that may be accessible to the UI
+    private String userId;
+    private String userName;
+    private String userIcon;
 
-    LoggedInUserView(String displayName) {
-        this.displayName = displayName;
+    public LoggedInUserView(String userId, String userName, String userIcon) {
+        this.userId = userId;
+        this.userName = userName;
+        this.userIcon = userIcon;
     }
 
-    String getDisplayName() {
-        return displayName;
+    public String getUserId() {
+        return userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
     }
 }

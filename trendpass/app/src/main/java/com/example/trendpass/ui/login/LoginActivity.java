@@ -1,16 +1,8 @@
 package com.example.trendpass.ui.login;
 
-import android.app.Activity;
-
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -22,22 +14,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
 import com.example.trendpass.R;
 import com.example.trendpass.SampleMainActivity;
-import com.example.trendpass.async.AsyncBaseActivity;
-import com.example.trendpass.async.SampleAsyncActivity;
-import com.example.trendpass.ui.login.LoginViewModel;
-import com.example.trendpass.ui.login.LoginViewModelFactory;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
+
+    EditText usernameEditText;
+    EditText passwordEditText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,8 +37,8 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
@@ -80,10 +71,6 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult.getSuccess() != null) {
                     updateUiWithUser(loginResult.getSuccess());
                 }
-                setResult(Activity.RESULT_OK);
-
-                //Complete and destroy login activity once successful
-                finish();
             }
         });
 
@@ -111,8 +98,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                    loginViewModel.login(
+                            usernameEditText.getText().toString(),
+                            passwordEditText.getText().toString(),
+                            LoginActivity.this
+                    );
                 }
                 return false;
             }
@@ -123,60 +113,55 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 loadingProgressBar.setVisibility(View.VISIBLE);
 
-                try {
-                    String ip= getString(R.string.ip);
-                    new AsyncLoginActivity(LoginActivity.this)
-                            .execute(new URL("http://" + ip + ":8080/trendpass/AuthServlet?email=" + usernameEditText.getText().toString() + "&password=" + passwordEditText.getText().toString()));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                loginViewModel.login(
+                        usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString(),
+                        LoginActivity.this
+                );
             }
         });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
+        String welcome = getString(R.string.welcome) + model.getUserName();
         // TODO : initiate successful logged in experience
         Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+
+        // ログイン成功時処理
+        // 「pref_data」という設定データファイルを読み込み
+        SharedPreferences prefData = getSharedPreferences("pref_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefData.edit();
+
+        // 入力されたログインID
+        editor.putString("email", usernameEditText.getText().toString());
+
+        //　DBから取得した情報
+        editor.putString("userId", model.getUserId());
+        editor.putString("userName", model.getUserName());
+        editor.putString("userIcon", model.getUserIcon());
+
+        // 保存
+        editor.commit();
+
+        Intent intent = new Intent(LoginActivity.this, SampleMainActivity.class);
+        startActivity(intent);
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
-}
-
-class AsyncLoginActivity extends AsyncBaseActivity {
-
-    public AsyncLoginActivity(Activity activity) {
-        super(activity);
-    }
 
     @Override
-    protected JSONObject doInBackground(URL... urls) {
-        JSONObject resJson = super.doInBackground(urls);
-        return resJson;
-    }
-
-    protected void onPostExecute(JSONObject resJson) {
-        String userId = "";
-        String userName = "";
-        String userIcon = "";
-
-        try {
-            userId = resJson.getJSONObject("loginInfo").getString("userId");
-            userName = resJson.getJSONObject("loginInfo").getString("userName");
-            userIcon = resJson.getJSONObject("loginInfo").getString("userIcon");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (userId.isEmpty()){
-            TextView tv = activity.findViewById(R.id.LoginResultTxtv);
-            tv.setText("メールアドレス又は、パスワードが間違っています。");
-        }
+    protected void onResume() {
+        super.onResume();
+        Button signUpBtn = findViewById(R.id.signUpBtn);
+        signUpBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 会員登録へ遷移
+                //Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                //startActivity(intent);
+            }
+        });
     }
 }

@@ -6,18 +6,24 @@ package com.example.trendpass.data.model;
 public class LoggedInUser {
 
     private String userId;
-    private String displayName;
+    private String userName;
+    private String userIcon;
 
-    public LoggedInUser(String userId, String displayName) {
+    public LoggedInUser(String userId, String userName, String userIcon) {
         this.userId = userId;
-        this.displayName = displayName;
+        this.userName = userName;
+        this.userIcon = userIcon;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getUserName() {
+        return userName;
+    }
+
+    public String getUserIcon() {
+        return userIcon;
     }
 }
