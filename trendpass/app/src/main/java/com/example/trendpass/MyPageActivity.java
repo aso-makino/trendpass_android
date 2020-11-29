@@ -1,6 +1,8 @@
 package com.example.trendpass;
 
         import androidx.appcompat.app.AppCompatActivity;
+
+        import android.content.SharedPreferences;
         import android.os.Bundle;
         import android.widget.ImageView;
 
@@ -23,8 +25,10 @@ public class MyPageActivity extends AppCompatActivity {
                 .centerInside()
                 .into((ImageView) findViewById(R.id.settings_btn));
 
-        String userId = "1";
+        SharedPreferences prefData = getSharedPreferences("pref_data", MODE_PRIVATE);
+        String userId = prefData.getString("userId", "");
 
+        System.out.println("ああああああああああああああああああああああああああああああ" + userId);
         try {
             String ip= getString(R.string.ip);
             new AsyncMyPageReviewActivity(MyPageActivity.this)

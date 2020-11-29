@@ -1,5 +1,7 @@
 package com.example.trendpass.ui.slideshow;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +38,8 @@ public class SlideshowFragment extends Fragment {
                 .centerInside()
                 .into((ImageView) root.findViewById(R.id.settings_btn));
 
-        String userId = "1";
+        SharedPreferences prefData = getActivity().getSharedPreferences("pref_data", Context.MODE_PRIVATE);
+        String userId = prefData.getString("userId", "");
 
         try {
             String ip= getString(R.string.ip);

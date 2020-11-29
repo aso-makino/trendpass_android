@@ -13,7 +13,7 @@
 
         <action
             android:id="@+id/action_HomeFragment_to_HomeSecondFragment"
-            app:destination="@id/nav_home_second" />
+            app:destination="@id/nav_gallery" />
     </fragment>
     <fragment
         android:id="@+id/nav_home_second"

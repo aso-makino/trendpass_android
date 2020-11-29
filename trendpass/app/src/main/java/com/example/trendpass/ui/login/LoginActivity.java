@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.trendpass.DrawerActivity;
 import com.example.trendpass.R;
 import com.example.trendpass.SampleMainActivity;
 
@@ -143,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
         // 保存
         editor.commit();
 
-        Intent intent = new Intent(LoginActivity.this, SampleMainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, DrawerActivity.class);
         startActivity(intent);
     }
 
