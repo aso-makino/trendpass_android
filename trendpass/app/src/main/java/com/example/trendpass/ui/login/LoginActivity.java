@@ -20,8 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.trendpass.MyPageActivity;
 import com.example.trendpass.R;
-import com.example.trendpass.SampleMainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -129,8 +129,8 @@ public class LoginActivity extends AppCompatActivity {
 
         // ログイン成功時処理
         // 「pref_data」という設定データファイルを読み込み
-        SharedPreferences prefData = getSharedPreferences("pref_data", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefData.edit();
+        SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = loginData.edit();
 
         // 入力されたログインID
         editor.putString("email", usernameEditText.getText().toString());
@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
         // 保存
         editor.commit();
 
-        Intent intent = new Intent(LoginActivity.this, SampleMainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MyPageActivity.class);
         startActivity(intent);
     }
 
