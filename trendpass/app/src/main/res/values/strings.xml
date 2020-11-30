@@ -23,10 +23,14 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >7 characters</string>
+    <string name="invalid_password">Password must be > 7 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="signUpGuideMsg">初めてご利用のお客様【アカウント作成】</string>
     <string name="loginBtn">ログイン</string>
     <string name="signUpBtn">アカウントを作成</string>
     <string name="loginTitle">ログイン</string>
+    <string name="settingsSignChange">会員情報変更</string>
+    <string name="settingsLogout">ログアウト</string>
+    <string name="settingsUnsubscribe">Trend Passから退会</string>
+    <string name="settings">設定</string>
 </resources>

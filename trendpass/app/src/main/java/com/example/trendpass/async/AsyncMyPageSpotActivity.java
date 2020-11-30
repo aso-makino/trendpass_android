@@ -40,9 +40,8 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
         String latitude = "";
         String longitude = "";
         String genreId = "";
+        String spotImage = "";
 
-        String reviewNumber = "";
-        String reviewImage = "";
 
         String userId = "";
         String userName = "";
@@ -70,48 +69,30 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
             e.printStackTrace();
         }
 
-
         //　投稿の情報
         try {
             int spotSize = resJson.getInt("spotSize");
-            int reviewSize = resJson.getInt("reviewSize");
+            final String[] image = new String[spotSize];
 
             for(int i = 0; i < spotSize; i++){
-                JSONObject spotList = resJson.getJSONArray("spotList").getJSONObject(i);
+                HashMap<String,String> spot = new HashMap<String,String>();
+
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
                 latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
                 longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
                 genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
+                spotImage = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotImage");
 
+                spot.put("spotId",spotId);
+                spot.put("spotName",spotName);
+                spot.put("latitude",latitude);
+                spot.put("longitude",longitude);
+                spot.put("genreId",genreId);
+                spot.put("reviewImage",spotImage);
+                image[i] = spotImage;
             }
 
-            final String[] image = new String[reviewSize];
-
-            for(int i = 0; i < reviewSize; i++){
-
-                HashMap<String,String> spotReview = new HashMap<String,String>();
-
-                spotId = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("spotId");
-                spotName = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("spotName");
-                latitude = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("ratitude");
-                longitude = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("longitude");
-                genreId = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("genreId");
-                reviewNumber = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("reviewNumber");
-                reviewImage = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("reviewImage");
-
-                spotReview.put("spotId",spotId);
-                spotReview.put("spotName",spotName);
-                spotReview.put("latitude",latitude);
-                spotReview.put("longitude",longitude);
-                spotReview.put("genreId",genreId);
-                spotReview.put("reviewNumber",reviewNumber);
-                spotReview.put("reviewImage",reviewImage);
-
-                image[i] = reviewImage;
-            }
-
-            System.out.println(3);
             // GridViewのインスタンスを生成
             GridView gridview = activity.findViewById(R.id.gridview);
             // BaseAdapter を継承したGridAdapterのインスタンスを生成
@@ -123,7 +104,6 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
                     image
             );
 
-            System.out.println(4);
             // gridViewにadapterをセット
             gridview.setAdapter(adapter);
 
@@ -131,12 +111,6 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
             e.printStackTrace();
         }
 
-        /*
-        if (result == false){
-            TextView tv = activity.findViewById(R.id.LoginResultTxtv);
-            tv.setText("メールアドレス又は、パスワードが間違っています。");
-        }
-        */
     }
 }
 

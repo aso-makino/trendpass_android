@@ -47,7 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="50dp"
-        android:background="#888"
+        android:background="#E4E4E4"
         android:numColumns="3"
         android:stretchMode="columnWidth"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -43,7 +43,7 @@ public class LoginViewModel extends ViewModel implements AsyncTaskCallbackListen
     public void login(String username, String password, Activity activity) {
         // can be launched in a separate asynchronous job
         try {
-            String ip= "192.168.2.102";
+            String ip= "172.20.90.26";
             new AsyncLoginActivity(activity, LoginViewModel.this)
                     .execute(new URL("http://" + ip + ":8080/trendpass/AuthServlet?email=" + username + "&password=" + password));
         } catch (MalformedURLException e) {
@@ -75,7 +75,7 @@ public class LoginViewModel extends ViewModel implements AsyncTaskCallbackListen
 
     // A placeholder password validation check
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 7;
+        return password != null && password.trim().length() > 5;
     }
 
     @Override
