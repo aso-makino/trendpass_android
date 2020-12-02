@@ -3,10 +3,12 @@ package com.example.trendpass;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
@@ -22,28 +24,23 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.trendpass.async.AsyncGetUserInfoActivity;
 import com.example.trendpass.async.AsyncMailCheckActivity;
+import com.example.trendpass.async.AsyncPostBaseActivity;
+import com.example.trendpass.async.AsyncSignChangeActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-public class SignUpActivity extends AppCompatActivity {
-
-    //UseIDをデバイス内から参照
-    //インスタンス生成
-//    SharedPreferences userid_prefs = getSharedPreferences("DATA", Context.MODE_PRIVATE);
-    //変数editorは適宜変更
-    //SharedPreferences.Editor editor = userid_prefs.edit();
-    //editor.putString("int", 1);←書き込み
-    //editor.apply();
-    //UserIdがない場合、初期値0を取得する
-    //int userId =　userid_prefs.getInt("int",0);←読み込み
-    private String userId = "0000001";//テスト用
+public class SignChangeActivity extends AppCompatActivity {
 
     private InputMethodManager inputMethodManager;
     private ConstraintLayout mainLayout;
@@ -56,20 +53,26 @@ public class SignUpActivity extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 0;
     private Bitmap imgView;
     private String picturePath;//画像パス
+    private Uri userIconUri;
+
+    //UseIDをデバイス内から参照
+    //　ユーザーIDを取得
+//    SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
+//    String userId = loginData.getString("userId", "");
+
+    private String userId = "0000001";//テスト用
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_sign_change);
 
-        //ロゴ
-        Picasso.with(this.getApplicationContext())
-                .load(R.drawable.rogo)
-                .resize(500, 500)
-                .placeholder(R.drawable.noimage)
-                .centerInside()
-                .into((ImageView) this.findViewById(R.id.rogoImg));
+        //async
+        String ip = getString(R.string.ip);
+        String postJson = "{\"userId\":\"" + userId + "\"}";
+        AsyncGetUserInfoActivity asyncGetUserInfoActivity = new AsyncGetUserInfoActivity(SignChangeActivity.this);
+        asyncGetUserInfoActivity.execute("http://" + ip + ":8080/trendpass/GetUserInfo", postJson);
 
         //edittextの取得
         final EditText nameEtxt = findViewById(R.id.userNameET);
@@ -79,29 +82,17 @@ public class SignUpActivity extends AppCompatActivity {
         final EditText birthEtxt = findViewById(R.id.birthET);
 
         final RadioGroup group = (RadioGroup)findViewById(R.id.radiogroup_sex);
-        String name = getIntent().getStringExtra("name");
-        if(name != null){
-            Intent intent = getIntent();
-            final String mail = intent.getStringExtra("mail");
-            final String sex = intent.getStringExtra("sex");
-            final String birth = intent.getStringExtra("birth");
 
-            nameEtxt.setText(name);
-            mailEtxt.setText(mail);
-            birthEtxt.setText(birth);
+        //ロゴ
+        Picasso.with(this.getApplicationContext())
+                .load(R.drawable.rogo)
+                .resize(500, 500)
+                .placeholder(R.drawable.noimage)
+                .centerInside()
+                .into((ImageView) this.findViewById(R.id.rogoImg));
 
-            switch (sex){
-                case "男性":
-                    group.check(R.id.radiobutton_male);
-                    break;
-                case "女性":
-                    group.check(R.id.radiobutton_female);
-                    break;
-                case "未選択":
-                    group.check(R.id.radiobutton_unselected);
-                    break;
-            }
-        }
+
+
 
         //画面全体のレイアウト
         mainLayout = findViewById(R.id.constraintLayout);
@@ -131,7 +122,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }else{
                         namePermitFlg = true;
                     }
-                    
+
                 }
             }
         });
@@ -164,9 +155,9 @@ public class SignUpActivity extends AppCompatActivity {
                     String json = "{\"userId\":\"" + userId + "\",\"mail\":\"" + mail + "\"}";
 
                     String ip= getString(R.string.ip);
-                    AsyncMailCheckActivity asyncMailCheckActivity = new AsyncMailCheckActivity(SignUpActivity.this);
+                    AsyncMailCheckActivity asyncMailCheckActivity = new AsyncMailCheckActivity(SignChangeActivity.this);
                     asyncMailCheckActivity.execute("http://"+ip+":8080/trendpass/MailCheck",json);
-                    
+
                 }
             }
         });
@@ -265,13 +256,15 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
+
                 String name = nameEtxt.getText().toString().trim();
                 String mail = mailEtxt.getText().toString().trim();
                 String pass1 = pass1Etxt.getText().toString().trim();
                 String pass2 = pass2Etxt.getText().toString().trim();
                 int checkedId = group.getCheckedRadioButtonId();
+                RadioButton radioButton = findViewById(checkedId);
+                String sex = radioButton.getText().toString();
                 String birth = birthEtxt.getText().toString().trim();
-
 
                 String pattern = "^([a-zA-Z0-9])+([a-zA-Z0-9\\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\\._-]+)+$";
                 Pattern p = Pattern.compile(pattern);
@@ -286,39 +279,38 @@ public class SignUpActivity extends AppCompatActivity {
                 }
 
                 // 未入力チェック
-                if(name.length() == 0 || mail.length() == 0 || pass1.length() == 0 || pass2.length() == 0 || checkedId < 0 || birth.length() == 0 ){
-
+                if (name.length() == 0 || mail.length() == 0 || pass1.length() == 0 || pass2.length() == 0 || checkedId < 0 || birth.length() == 0) {
 
                     final View scrollView = findViewById(R.id.scrollView);
-                    if(name.length() == 0) {
+                    if (name.length() == 0) {
                         nameEtxt.setError("未入力です");
                         scrollView.post(new Runnable() {
                             public void run() {
                                 scrollView.scrollTo(0, nameEtxt.getBottom());
                             }
                         });
-                    }else if(mail.length() == 0){
+                    } else if (mail.length() == 0) {
                         mailEtxt.setError("未入力です");
                         scrollView.post(new Runnable() {
                             public void run() {
                                 scrollView.scrollTo(0, mailEtxt.getBottom());
                             }
                         });
-                    }else if(pass1.length() == 0){
+                    } else if (pass1.length() == 0) {
                         pass1Etxt.setError("未入力です");
                         scrollView.post(new Runnable() {
                             public void run() {
                                 scrollView.scrollTo(0, pass1Etxt.getBottom());
                             }
                         });
-                    }else if(pass2.length() == 0) {
+                    } else if (pass2.length() == 0) {
                         pass2Etxt.setError("未入力です");
                         scrollView.post(new Runnable() {
                             public void run() {
                                 scrollView.scrollTo(0, pass2Etxt.getBottom());
                             }
                         });
-                    }else if(checkedId < 0){
+                    } else if (checkedId < 0) {
 
                         final TextView sexErrTV = findViewById(R.id.sexErrTV);
                         sexErrTV.setText("未入力です");
@@ -329,7 +321,7 @@ public class SignUpActivity extends AppCompatActivity {
                             }
                         });
 
-                    }else if(birth.length() == 0){
+                    } else if (birth.length() == 0) {
                         birthEtxt.setError("未入力です");
                         scrollView.post(new Runnable() {
                             public void run() {
@@ -337,33 +329,38 @@ public class SignUpActivity extends AppCompatActivity {
                             }
                         });
                     }
-                }else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
-                        && pass1.equals(pass2) && pass1.length() > 128 && pass1.equals(pass2) && birth.length() <= 4 &&!date.before(birthDate)){
-                    namePermitFlg = true;
-                    mailPermitFlg = true;
-                    pass1PermitFlg = true;
-                    pass2PermitFlg = true;
-                    birthPermitFlg = true;
+                } else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
+                        && pass1.equals(pass2) && pass1.length() < 128 && pass1.equals(pass2) && birth.length() <= 4 && !date.before(birthDate)) {
 
-                }else if(namePermitFlg&&mailPermitFlg&&pass1PermitFlg&&pass2PermitFlg&&birthPermitFlg){
+                    // bitmap(Bitmap)に画像データが入っている前提
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(imgView.getByteCount());
+                    imgView.copyPixelsToBuffer(byteBuffer);
+                    byte[] byteImage = byteBuffer.array();
 
-                    //確認画面へ遷移
-                    Intent intent = new Intent(SignUpActivity.this, SignUpConfirmActivity.class);
+                    //async
+                    String ip = getString(R.string.ip);
+                    String postJson = "{\"userId\":\"" + userId + "\",\"userName\":\"" + name + "\",\"mail\":\"" + mail + "\",\"password\":\"" + pass2 + "\",\"sex\":\"" + sex + "\",\"birth\":\"" + birth + "\"}";
+                    System.out.println(postJson);
+                    AsyncSignChangeActivity asyncSignChangeActivity = new AsyncSignChangeActivity(SignChangeActivity.this);
+                    asyncSignChangeActivity.execute("http://" + ip + ":8080/trendpass/SignChange",  postJson,picturePath);
 
-                    RadioButton radioButton = findViewById(checkedId);
-                    String sex = radioButton.getText().toString();
+//                    //マイページ画面へ遷移
+//                    Intent intent = new Intent(SignChangeActivity.this, MypageActivity.class);
 
+//                    RadioButton radioButton = findViewById(checkedId);
+//                    String sex = radioButton.getText().toString();
+//
+//
+//                    intent.putExtra("name", name);
+//                    intent.putExtra("mail", mail);
+//                    intent.putExtra("pass", pass2);
+//                    intent.putExtra("sex", sex);
+//                    intent.putExtra("birth", birth);
+//                    intent.putExtra("userIcon", picturePath);
+//                    startActivity(intent);
 
-                    intent.putExtra("name", name);
-                    intent.putExtra("mail", mail);
-                    intent.putExtra("pass", pass2);
-                    intent.putExtra("sex", sex);
-                    intent.putExtra("birth", birth);
-                    intent.putExtra("userIcon", picturePath);
-                    startActivity(intent);
 
                 }
-
             }
         });
     }
@@ -390,6 +387,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_GALLERY && resultCode == RESULT_OK && null != data) {
+            userIconUri = data.getData();
 
             try {
                 ContentResolver contentResolver = getContentResolver();
@@ -429,7 +427,7 @@ public class SignUpActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
 
-                Toast toast = Toast.makeText(SignUpActivity.this,
+                Toast toast = Toast.makeText(SignChangeActivity.this,
                         "例外が発生、Permissionを許可していますか？", Toast.LENGTH_SHORT);
                 toast.show();
 
@@ -443,4 +441,5 @@ public class SignUpActivity extends AppCompatActivity {
 
         }
     }
+
 }

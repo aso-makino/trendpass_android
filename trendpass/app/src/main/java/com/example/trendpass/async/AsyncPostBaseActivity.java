@@ -15,12 +15,12 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncPostBaseActivity extends AsyncTask<String, Void, JSONObject> {
-    protected Activity activity;
+    public class AsyncPostBaseActivity extends AsyncTask<String, Void, JSONObject> {
+        protected Activity activity;
 
-    public AsyncPostBaseActivity(Activity activity) {
-        this.activity = activity;
-    }
+        public AsyncPostBaseActivity(Activity activity) {
+            this.activity = activity;
+        }
 
         @Override
         protected JSONObject doInBackground(String... param) {
@@ -58,7 +58,7 @@ public class AsyncPostBaseActivity extends AsyncTask<String, Void, JSONObject> {
 
                 final InputStream in = connection.getInputStream();
                 String encoding = connection.getContentEncoding();
-                if(null == encoding){
+                if (null == encoding) {
                     encoding = "UTF-8";
                 }
 
@@ -68,7 +68,7 @@ public class AsyncPostBaseActivity extends AsyncTask<String, Void, JSONObject> {
                 StringBuilder response = new StringBuilder();
                 String line = null;
 
-                while((line = bufReader.readLine()) != null) {
+                while ((line = bufReader.readLine()) != null) {
                     response.append(line);
                 }
                 bufReader.close();
@@ -90,4 +90,4 @@ public class AsyncPostBaseActivity extends AsyncTask<String, Void, JSONObject> {
                 }
             }
         }
-}
+    }

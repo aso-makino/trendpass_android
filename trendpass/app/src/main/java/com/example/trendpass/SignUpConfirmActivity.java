@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 public class SignUpConfirmActivity extends AppCompatActivity {
 
@@ -71,10 +72,20 @@ public class SignUpConfirmActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
+                // bitmap(Bitmap)に画像データが入っている前提
+                ByteBuffer byteBuffer = ByteBuffer.allocate(imgView.getByteCount());
+                imgView.copyPixelsToBuffer(byteBuffer);
+                byte[] byteImage = byteBuffer.array();
+
+                String pathName = picturePath;
+                int endIndex = pathName.lastIndexOf('/'); // 最後の'/'のインデックスを検索
+                String fileName = pathName.substring(endIndex + 1); //
+
+
                 String ip = getString(R.string.ip);
                 String postJson = "{\"userName\":\"" + name + "\",\"userMail\":\"" + mail + "\",\"password\":\"" + pass + "\",\"sex\":\"" + sex + "\",\"birth\":\"" + birth + "\"}";
                 AsyncSignUpActivity asyncSignUpActivity = new AsyncSignUpActivity(SignUpConfirmActivity.this);
-                asyncSignUpActivity.execute("http://" + ip + ":8080/trendpass/SignUp", postJson,imageView);
+                asyncSignUpActivity.execute("http://" + ip + ":8080/trendpass/SignUp",byteImage, postJson,fileName);
             }
         });
 

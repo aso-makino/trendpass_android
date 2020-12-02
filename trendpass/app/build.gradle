@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+    useLibrary 'org.apache.http.legacy'
+
 
     defaultConfig {
         applicationId "com.example.trendpass"
@@ -27,11 +29,15 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'org.jetbrains:annotations-java5:15.0'
+    implementation group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:23.0.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.0'
 }

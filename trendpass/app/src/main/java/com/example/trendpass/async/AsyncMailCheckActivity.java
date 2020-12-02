@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
-public class AsyncMailCheckActivity extends AsyncBaseActivity {
+public class AsyncMailCheckActivity extends AsyncPostBaseActivity {
 
     private String url = null;
 
@@ -19,9 +19,8 @@ public class AsyncMailCheckActivity extends AsyncBaseActivity {
     }
 
     @Override
-    protected JSONObject doInBackground(URL... urls) {
-        this.url = urls[0].toString();
-        JSONObject resJson = super.doInBackground(urls);
+    protected JSONObject doInBackground(String... param) {
+        JSONObject resJson = super.doInBackground(param);
         return resJson;
     }
 
