@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.trendpass.DispMapActivity">
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@mipmap/ic_launcher"
+        android:title="性別">
+    </item>
+
+    <item
+        android:icon="@mipmap/ic_launcher"
+        android:title="ジャンル">
+    </item>
+
+    <item
+        android:icon="@mipmap/ic_launcher"
+        android:title="人気順">
+    </item>
+
+    <item
+        android:icon="@mipmap/ic_launcher"
+        android:title="距離">
+    </item>
+
+    <item
+        android:icon="@mipmap/ic_launcher"
+        android:title="年齢">
+    </item>
+
+
+</menu>
