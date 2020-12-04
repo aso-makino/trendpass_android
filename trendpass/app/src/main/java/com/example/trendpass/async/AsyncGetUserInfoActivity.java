@@ -1,31 +1,36 @@
 package com.example.trendpass.async;
 
+import android.app.Activity;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.example.trendpass.R;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
-public class GetUserInfoActivity extends AsyncPostBaseActivity {
+public class AsyncGetUserInfoActivity extends AsyncPostBaseActivity {
 
-    @Override
-    protected String doInBackground(String... params) {
-        return super.doInBackground(params);
+    public AsyncGetUserInfoActivity(Activity activity) {
+        super(activity);
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected JSONObject doInBackground(String... params) {
+        JSONObject resJson = super.doInBackground(params);
+        return resJson;
+    }
+
+    protected void onPostExecute(JSONObject res) {
 
         //edittextの取得
-        final EditText nameEtxt = findViewById(R.id.userNameET);
-        final EditText mailEtxt = findViewById(R.id.mailET);
-        final EditText pass1Etxt = findViewById(R.id.password1ET);
-        final EditText pass2Etxt = findViewById(R.id.password2ET);
-        final EditText birthEtxt = findViewById(R.id.birthET);
+        final EditText nameEtxt = activity.findViewById(R.id.userNameET);
+        final EditText mailEtxt = activity.findViewById(R.id.mailET);
+        final EditText birthEtxt = activity.findViewById(R.id.birthET);
 
-        final RadioGroup group = (RadioGroup)findViewById(R.id.radiogroup_sex);
+        final RadioGroup group = (RadioGroup)activity.findViewById(R.id.radiogroup_sex);
 
         try {
             String name = res.getJSONObject("user").getString("userName");
@@ -38,6 +43,15 @@ public class GetUserInfoActivity extends AsyncPostBaseActivity {
             nameEtxt.setText(name);
             mailEtxt.setText(mail);
             birthEtxt.setText(birth);
+
+            String ip = "";
+            Picasso.with(activity.getApplicationContext())
+                    .load("http://" + ip + ":8080/trendpass/DisplayImage?name="+userIcon)
+                    .resize(500, 500)
+                    .placeholder(R.drawable.noimage)
+                    .centerInside()
+                    .into((ImageView) activity.findViewById(R.id.userIcon));
+
 
             switch (sex){
                 case "1":
