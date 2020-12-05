@@ -31,6 +31,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
+        <activity android:name=".NearSpotListActivity">
         <activity android:name=".DispMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,6 +65,14 @@
 
 
 
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".SampleMainActivity" />
+        <activity android:name=".MyPageActivity" />
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:label="@string/title_activity_login">
+        </activity>
+        <activity android:name=".async.AsyncBaseActivity" />
     </application>
 
 </manifest>
