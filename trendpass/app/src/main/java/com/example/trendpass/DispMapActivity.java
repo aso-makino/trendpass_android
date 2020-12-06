@@ -362,8 +362,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
                          ////////////////////////////
                         //位置情報履歴画面へ
-                        Intent intent = new Intent(DispMapActivity.this,InsertReviewActivity.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(DispMapActivity.this,InsertReviewActivity.class);
+//                        startActivity(intent);
 
 
                             }
@@ -375,8 +375,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             public void onClick(DialogInterface dialog, int which) {
                                 ////////////////////////////
                                 //口コミ投稿画面へ
-                                Intent intent = new Intent(DispMapActivity.this, InsertReviewActivity.class);
-                                startActivity(intent);
+//                                Intent intent = new Intent(DispMapActivity.this, InsertReviewActivity.class);
+//                                startActivity(intent);
                             }
                         })
                         .create()
