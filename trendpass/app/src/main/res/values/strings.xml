@@ -86,4 +86,6 @@
         <item>人気順</item>
     </string-array>
 
+    <string name="dispPassBtnTxt">すれちがい</string>
+    <string name="dispRankingBtn">ランキング</string>
 </resources>
