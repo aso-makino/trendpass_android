@@ -32,7 +32,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity android:name=".NearSpotListActivity">
-        <activity android:name=".DispSpotListActivity"></activity>
+        <activity android:name=".DispSpotListActivity"/>
         <activity android:name=".SettingsActivity" />
         <activity android:name=".SampleMainActivity" />
         <activity android:name=".MyPageActivity" />
