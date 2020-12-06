@@ -130,8 +130,6 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
             ListView listView = activity.findViewById(R.id.reviewList);
 
             // BaseAdapter を継承したadapterのインスタンスを生成
-            // レイアウトファイル list_items.xml を
-            // activity_main.xml に inflate するためにadapterに引数として渡す
             BaseAdapter adapter = new RatingAdapter(activity.getApplicationContext(),
                     R.layout.list_disp_spot_detail, reviewRating,reviewContent);
 

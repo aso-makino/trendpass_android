@@ -88,4 +88,10 @@
 
     <string name="dispPassBtnTxt">すれちがい</string>
     <string name="dispRankingBtn">ランキング</string>
+    <string name="Imageupload">アイコン設定</string>
+    <string name="nameHint">ユーザーネーム</string>
+    <string name="mailHint">メールアドレス</string>
+    <string name="passwordHint">パスワード</string>
+    <string name="passwordHint2">パスワード確認</string>
+    <string name="birthHint">生年</string>
 </resources>
