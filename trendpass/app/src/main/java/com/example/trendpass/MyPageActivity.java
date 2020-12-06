@@ -48,7 +48,7 @@ public class MyPageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Button dispReviewBtn = findViewById(R.id.dispReviewBtn);
+        Button dispReviewBtn = findViewById(R.id.dispRankingBtn);
         dispReviewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,7 +67,7 @@ public class MyPageActivity extends AppCompatActivity {
             }
         });
 
-        Button dispSpotBtn = findViewById(R.id.dispSpotBtn);
+        Button dispSpotBtn = findViewById(R.id.dispPassBtn);
         dispSpotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,6 +93,35 @@ public class MyPageActivity extends AppCompatActivity {
                 Intent intent = new Intent(MyPageActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+            }
+        });
+
+        findViewById(R.id.mapbtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("mapが押されました");
+            }
+        });
+
+        findViewById(R.id.insertbtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("insertが押されました");
+            }
+        });
+
+        findViewById(R.id.listbtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyPageActivity.this, DispSpotListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.userbtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("userが押されました");
             }
         });
     }

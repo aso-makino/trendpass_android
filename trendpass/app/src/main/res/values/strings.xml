@@ -33,4 +33,6 @@
     <string name="settingsLogout">ログアウト</string>
     <string name="settingsUnsubscribe">Trend Passから退会</string>
     <string name="settings">設定</string>
+    <string name="dispPassBtnTxt">すれちがい</string>
+    <string name="dispRankingBtn">ランキング</string>
 </resources>

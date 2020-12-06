@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class GridAdapter extends BaseAdapter {
+public class SpotListGridAdapter extends BaseAdapter {
 
     private List<HashMap<String,String>> spotReviewList;
     private LayoutInflater inflater;
@@ -23,10 +23,10 @@ public class GridAdapter extends BaseAdapter {
     private Context context;
     private List<String> imageList = new ArrayList<>();
 
-    public GridAdapter(Context context,
+    public SpotListGridAdapter(Context context,
                        int layoutId,
-    //                   List<HashMap<String, String>> spotReviewList) {
-                         String[] image) {
+                       //                   List<HashMap<String, String>> spotReviewList) {
+                       String[] image) {
         super();
         this.inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -56,7 +56,7 @@ public class GridAdapter extends BaseAdapter {
                 .load(addUrl(position))
                 .resize(500, 500)
                 .placeholder(R.drawable.insert)
-                .error(R.drawable.noimage)
+                .error(R.drawable.map)
                 .into(img);
 
 

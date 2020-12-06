@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#00000000" >
 
     <Button
         android:id="@+id/dispPassBtn"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:text="@string/mySpotBtn"
+        android:text="@string/dispPassBtnTxt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dispRankingBtn"
@@ -21,7 +21,7 @@
         android:id="@+id/dispRankingBtn"
         android:layout_width="0dp"
         android:layout_height="40dp"
-        android:text="@string/myReviewBtn"
+        android:text="@string/dispRankingBtn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dispPassBtn"
         app:layout_constraintStart_toStartOf="parent"
