@@ -326,7 +326,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             //ボタンタッチしてユーザー設定画面へ
             public void onClick(View view) {
                 //設定画面へ
-                Intent intent = new Intent(DispMapActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(DispMapActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
         });
@@ -342,14 +342,14 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                /*
                                 ////////////////////////////
                                 //現在地周辺スポット一覧画面へ
-                                Intent intent = new Intent(DispMapActivity.this, DispSpotListActivity.class);
-                                startActivity(intent);
-                                Log.v("Alert", "スポット一覧へ");
+//                                Intent intent = new Intent(DispMapActivity.this, NearSpotListActivity.class);
+//                                intent.putExtra("latitude",latitude);
+//                                intent.putExtra("longitude",longitude);
+//                                startActivity(intent);
+//                                Log.v("Alert", "スポット一覧へ");
                                 ///////////////////////////
-                                */
                             }
                         })
 
@@ -364,7 +364,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                         //位置情報履歴画面へ
 //                        Intent intent = new Intent(DispMapActivity.this,InsertReviewActivity.class);
 //                        startActivity(intent);
-
 
                             }
                         })

@@ -25,13 +25,6 @@ public class ReviewDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_detail);
 
-        //ロゴ
-        Picasso.with(this.getApplicationContext())
-                .load(R.drawable.rogo)
-                .resize(500,500)
-                .placeholder(R.drawable.noimage)
-                .centerInside()
-                .into((ImageView) this.findViewById(R.id.rogoImg));
 
         Intent intent = getIntent();
         // intentで受け取ったものを取り出す
