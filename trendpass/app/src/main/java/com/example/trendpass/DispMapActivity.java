@@ -400,7 +400,16 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(DispMapActivity.this, DispMapActivity.class);
+                startActivity(intent);
+            }
+        });
 
         initLocationManager();
 

@@ -5,12 +5,15 @@ import android.widget.GridView;
 
 import com.example.trendpass.GridAdapter;
 import com.example.trendpass.R;
+import com.example.trendpass.SpotListGridAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncDispSpotListActivity extends AsyncBaseActivity {
 
@@ -42,8 +45,9 @@ public class AsyncDispSpotListActivity extends AsyncBaseActivity {
             int spotSize = resJson.getInt("spotSize");
             final String[] image = new String[spotSize];
 
+            List<HashMap<String,String>> spotList = new ArrayList<>();
             for(int i = 0; i < spotSize; i++){
-                HashMap<String,String> spot = new HashMap<String,String>();
+                HashMap<String,String> spot = new HashMap<>();
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
@@ -58,6 +62,8 @@ public class AsyncDispSpotListActivity extends AsyncBaseActivity {
                 spot.put("longitude",longitude);
                 spot.put("genreId",genreId);
                 spot.put("reviewImage",spotImage);
+                
+                spotList.add(spot);
                 image[i] = spotImage;
             }
 
@@ -67,10 +73,10 @@ public class AsyncDispSpotListActivity extends AsyncBaseActivity {
             // BaseAdapter を継承したGridAdapterのインスタンスを生成
             // 子要素のレイアウトファイル grid_items.xml を
             // activity_main.xml に inflate するためにGridAdapterに引数として渡す
-            GridAdapter adapter = new GridAdapter(
+            SpotListGridAdapter adapter = new SpotListGridAdapter(
                     activity.getApplicationContext(),
                     R.layout.activity_disp_spot_list,
-                    image
+                    image,spotList
             );
 
             // gridViewにadapterをセット

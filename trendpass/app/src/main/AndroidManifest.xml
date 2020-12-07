@@ -33,7 +33,7 @@
         <meta-data
             android:name="com.google.android.gms.version"/>
 
-        <activity android:name=".SplashActivity">
+
         <activity android:name=".NearSpotListActivity"/>
         <activity android:name=".DispSpotListActivity"/>
         <activity android:name=".SettingsActivity" />
@@ -41,7 +41,7 @@
         <activity android:name=".MyPageActivity" />
         <activity android:name=".DispMapActivity"/>
         <activity android:name=".async.AsyncBaseActivity"/>
-        <activity android:name=".InsertReviewActivity"/>
+<!--        <activity android:name=".InsertReviewActivity"/>-->
         <activity android:name=".SignUpCompleteActivity" />
         <activity android:name=".SignUpConfirmActivity" />
         <activity android:name=".SignUpActivity"/>
@@ -49,10 +49,12 @@
         <activity android:name=".ReviewDetailActivity" />
         <uses-library android:name="com.google.android.maps" />
             <service android:name=".LocationService"/>
-        <activity android:name=".SignChangeActivity">
+        <activity android:name=".SignChangeActivity"/>
         <activity
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login">
+        </activity>
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -73,20 +75,9 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
 <!--        APIキーの設定-->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
-
-
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".SampleMainActivity" />
-        <activity android:name=".MyPageActivity" />
-        <activity
-            android:name=".ui.login.LoginActivity"
-            android:label="@string/title_activity_login">
-        </activity>
-        <activity android:name=".async.AsyncBaseActivity" />
+<!--        <meta-data-->
+<!--            android:name="com.google.android.geo.API_KEY"-->
+<!--            android:value="@string/google_maps_key" />-->
     </application>
 
 </manifest>

@@ -1,6 +1,7 @@
 package com.example.trendpass;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +25,13 @@ public class SpotListGridAdapter extends BaseAdapter {
     private List<String> imageList = new ArrayList<>();
 
     public SpotListGridAdapter(Context context,
-                       int layoutId,
-                       //                   List<HashMap<String, String>> spotReviewList) {
-                       String[] image) {
+                       int layoutId, String[] image,
+                               List<HashMap<String, String>> spotReviewList) {
         super();
         this.inflater = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.layoutId = layoutId;
-        // this.spotReviewList = spotReviewList;
+        this.spotReviewList = spotReviewList;
         this.context = context;
         Collections.addAll(imageList, image);
     }
@@ -65,6 +65,14 @@ public class SpotListGridAdapter extends BaseAdapter {
             public void onClick(View v) {
                 String message = imageList.get(position) + "が選択されました。";
                 System.out.println(message);
+                Intent intent = new Intent(context,DispSpotDetailActivity.class);
+                intent.putExtra("spotId", spotReviewList.get(position).get("spotId"));
+                intent.putExtra("spotName", spotReviewList.get(position).get("spotName"));
+                intent.putExtra("latitude", spotReviewList.get(position).get("latitude"));
+                intent.putExtra("longitude", spotReviewList.get(position).get("longitude"));
+                intent.putExtra("genreId", spotReviewList.get(position).get("genreId"));
+                intent.putExtra("reviewImage", spotReviewList.get(position).get("reviewImage"));
+                context.startActivity(intent);
             }
         });
 

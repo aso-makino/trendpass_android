@@ -332,7 +332,6 @@ public class SignChangeActivity extends AppCompatActivity {
                 } else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
                         && pass1.equals(pass2) && pass1.length() < 128 && pass1.equals(pass2) && birth.length() <= 4 && !date.before(birthDate)) {
 
-
                     // bitmap(Bitmap)に画像データが入っている前提
                     /*if(imgView != null) {
                         ByteBuffer byteBuffer = ByteBuffer.allocate(imgView.getByteCount());

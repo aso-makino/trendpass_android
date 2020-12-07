@@ -1,13 +1,16 @@
 package com.example.trendpass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.trendpass.async.AsyncMyPageReviewActivity;
@@ -96,32 +99,97 @@ public class MyPageActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.mapbtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("mapが押されました");
-            }
-        });
+        //footerの生成
+        ImageButton mapButton = findViewById(R.id.mapbtn);
+        ImageButton insertButton = findViewById(R.id.insertbtn);
+        ImageButton mapListButton = findViewById(R.id.listbtn);
+        ImageButton userButton = findViewById(R.id.userbtn);
 
-        findViewById(R.id.insertbtn).setOnClickListener(new View.OnClickListener() {
+        //ユーザーボタンをタッチした時の処理
+        userButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("insertが押されました");
-            }
-        });
-
-        findViewById(R.id.listbtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyPageActivity.this, DispSpotListActivity.class);
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(MyPageActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
         });
 
-        findViewById(R.id.userbtn).setOnClickListener(new View.OnClickListener() {
+        //投稿ボタンをタッチした時の処理
+        insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("userが押されました");
+            //ボタンタッチして投稿種類選択ダイアログ表示
+            public void onClick(View view) {
+
+                new AlertDialog.Builder(MyPageActivity.this)
+                        .setPositiveButton("現在地からスポット投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                ////////////////////////////
+                                //現在地周辺スポット一覧画面へ
+//                                Intent intent = new Intent(MyPageActivity.this, NearSpotListActivity.class);
+//                                intent.putExtra("latitude",latitude);
+//                                intent.putExtra("longitude",longitude);
+//                                startActivity(intent);
+//                                Log.v("Alert", "スポット一覧へ");
+                                ///////////////////////////
+                            }
+                        })
+
+
+
+                        .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                ////////////////////////////
+                                //位置情報履歴画面へ
+//                        Intent intent = new Intent(MyPageActivity.this,Activity.class);
+//                        startActivity(intent);
+
+                            }
+                        })
+                        // 口コミ投稿ボタンの処理
+                        .setNegativeButton("口コミ投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            //口コミ投稿ボタンをタッチ
+                            public void onClick(DialogInterface dialog, int which) {
+                                ////////////////////////////
+                                //口コミ投稿画面へ
+//                                Intent intent = new Intent(MyPageActivity.this, Activity.class);
+//                                startActivity(intent);
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        });
+
+
+        //スポットリストボタンをタッチした時の処理
+        mapListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //ボタンタッチスポット一覧表示画面へ遷移する
+            public void onClick(View view) {
+                    ///////////////////////////
+                    //現在地周辺スポット一覧画面へ
+                    Intent intent = new Intent(MyPageActivity.this, DispSpotListActivity.class);
+                    startActivity(intent);
+                    Log.v("Alert", "スポット一覧へ");
+            }
+        });
+
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(MyPageActivity.this, DispMapActivity.class);
+                startActivity(intent);
             }
         });
     }

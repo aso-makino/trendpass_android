@@ -338,14 +338,7 @@ public class SignUpActivity extends AppCompatActivity {
                         });
                     }
                 }else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
-                        && pass1.equals(pass2) && pass1.length() > 128 && pass1.equals(pass2) && birth.length() <= 4 &&!date.before(birthDate)){
-                    namePermitFlg = true;
-                    mailPermitFlg = true;
-                    pass1PermitFlg = true;
-                    pass2PermitFlg = true;
-                    birthPermitFlg = true;
-
-                }else if(namePermitFlg&&mailPermitFlg&&pass1PermitFlg&&pass2PermitFlg&&birthPermitFlg){
+                        && pass1.equals(pass2) && pass1.length() < 128 && pass1.equals(pass2) && birth.length() <= 4 && !date.before(birthDate)) {
 
                     //確認画面へ遷移
                     Intent intent = new Intent(SignUpActivity.this, SignUpConfirmActivity.class);

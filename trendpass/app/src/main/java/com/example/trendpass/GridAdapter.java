@@ -74,7 +74,7 @@ public class GridAdapter extends BaseAdapter {
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "";
+        String ip = "172.30.16.45";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 imageList.get(number));

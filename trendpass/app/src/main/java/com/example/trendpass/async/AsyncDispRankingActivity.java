@@ -11,7 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncDispRankingActivity extends AsyncBaseActivity{
     private String url = null;
@@ -42,8 +44,9 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
             int spotSize = resJson.getInt("spotSize");
             final String[] image = new String[spotSize];
 
+            List<HashMap<String,String>> spotList = new ArrayList<>();
             for(int i = 0; i < spotSize; i++){
-                HashMap<String,String> spot = new HashMap<String,String>();
+                HashMap<String,String> spot = new HashMap<>();
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
@@ -58,6 +61,8 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
                 spot.put("longitude",longitude);
                 spot.put("genreId",genreId);
                 spot.put("reviewImage",spotImage);
+
+                spotList.add(spot);
                 image[i] = spotImage;
             }
 
@@ -70,7 +75,8 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
             RankingGridAdapter adapter = new RankingGridAdapter(
                     activity.getApplicationContext(),
                     R.layout.ranking_rayout,
-                    image
+                    image,
+                    spotList
             );
 
             // gridViewにadapterをセット

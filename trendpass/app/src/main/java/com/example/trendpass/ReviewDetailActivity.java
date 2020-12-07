@@ -1,16 +1,20 @@
 package com.example.trendpass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -71,31 +75,97 @@ public class ReviewDetailActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        findViewById(R.id.mapbtn).setOnClickListener(new View.OnClickListener() {
+        //footerの生成
+        ImageButton mapButton = findViewById(R.id.mapbtn);
+        ImageButton insertButton = findViewById(R.id.insertbtn);
+        ImageButton mapListButton = findViewById(R.id.listbtn);
+        ImageButton userButton = findViewById(R.id.userbtn);
+
+        //ユーザーボタンをタッチした時の処理
+        userButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("mapが押されました");
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, MyPageActivity.class);
+                startActivity(intent);
             }
         });
 
-        findViewById(R.id.insertbtn).setOnClickListener(new View.OnClickListener() {
+        //投稿ボタンをタッチした時の処理
+        insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("insertが押されました");
+            //ボタンタッチして投稿種類選択ダイアログ表示
+            public void onClick(View view) {
+
+                new AlertDialog.Builder(ReviewDetailActivity.this)
+                        .setPositiveButton("現在地からスポット投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                ////////////////////////////
+                                //現在地周辺スポット一覧画面へ
+//                                Intent intent = new Intent(ReviewDetailActivity.this, NearSpotListActivity.class);
+//                                intent.putExtra("latitude",latitude);
+//                                intent.putExtra("longitude",longitude);
+//                                startActivity(intent);
+//                                Log.v("Alert", "スポット一覧へ");
+                                ///////////////////////////
+                            }
+                        })
+
+
+
+                        .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                ////////////////////////////
+                                //位置情報履歴画面へ
+//                        Intent intent = new Intent(ReviewDetailActivity.this,Activity.class);
+//                        startActivity(intent);
+
+                            }
+                        })
+                        // 口コミ投稿ボタンの処理
+                        .setNegativeButton("口コミ投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            //口コミ投稿ボタンをタッチ
+                            public void onClick(DialogInterface dialog, int which) {
+                                ////////////////////////////
+                                //口コミ投稿画面へ
+//                                Intent intent = new Intent(ReviewDetailActivity.this, Activity.class);
+//                                startActivity(intent);
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
-        findViewById(R.id.listbtn).setOnClickListener(new View.OnClickListener() {
+
+        //スポットリストボタンをタッチした時の処理
+        mapListButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("listが押されました");
+            //ボタンタッチスポット一覧表示画面へ遷移する
+            public void onClick(View view) {
+                ///////////////////////////
+                //現在地周辺スポット一覧画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, DispSpotListActivity.class);
+                startActivity(intent);
+                Log.v("Alert", "スポット一覧へ");
             }
         });
 
-        findViewById(R.id.userbtn).setOnClickListener(new View.OnClickListener() {
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("userが押されました");
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, DispMapActivity.class);
+                startActivity(intent);
             }
         });
 
