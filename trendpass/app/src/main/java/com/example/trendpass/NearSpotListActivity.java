@@ -27,14 +27,6 @@ public class NearSpotListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_near_spot_list);
 
-        //ロゴ
-        Picasso.with(this.getApplicationContext())
-                .load(R.drawable.rogo)
-                .resize(500,500)
-                .placeholder(R.drawable.noimage)
-                .centerInside()
-                .into((ImageView) this.findViewById(R.id.rogoImg));
-
         Intent intent = getIntent();
         latitude = intent.getStringExtra("latitude");
         longitude = intent.getStringExtra("longitude");
