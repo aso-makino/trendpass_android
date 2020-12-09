@@ -9,6 +9,14 @@
          location permissions for the "MyLocation" functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Wi-Fiかモバイルルータ、あるいはその両方を使用し、都市の１区画程度の制度で位置情報の特定を行います。 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--    位置情報のリクエスト-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Wi-Fiかモバイルルータ、あるいはその両方を使用し、都市の１区画程度の制度で位置情報の特定を行います。 -->
@@ -30,8 +38,7 @@
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
-
+            android:value="@integer/google_play_services_version" />
 
         <activity android:name=".DispMapActivity">
             <intent-filter>

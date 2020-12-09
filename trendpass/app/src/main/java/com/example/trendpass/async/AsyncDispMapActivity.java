@@ -23,10 +23,10 @@ public class AsyncDispMapActivity extends AsyncBaseActivity {
         return resJson;
     }
 
-    @Override
+
     protected void onPostExecute(JSONObject resJson) {
 
+
+
+        }
     }
-
-}
-
