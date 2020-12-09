@@ -11,13 +11,14 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_weight="1"
-        android:background="#ffffff"
+        android:background="@drawable/map"
         android:scaleType="fitCenter"
+
         app:srcCompat="@drawable/map" />
 
     <ImageButton
         android:id="@+id/insertbtn"
-        android:background="#ffffff"
+        android:background="@drawable/insert"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_weight="1"
@@ -26,7 +27,7 @@
 
     <ImageButton
         android:id="@+id/listbtn"
-        android:background="#ffffff"
+        android:background="@drawable/list"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_weight="1"
@@ -35,7 +36,7 @@
 
     <ImageButton
         android:id="@+id/userbtn"
-        android:background="#ffffff"
+        android:background="@drawable/user"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_weight="1"

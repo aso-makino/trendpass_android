@@ -18,7 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+
+//import androidx.lifecycle.ViewModelProviders;
 
 import com.example.trendpass.MyPageActivity;
 import com.example.trendpass.R;
@@ -34,8 +35,12 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        /*
         loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
                 .get(LoginViewModel.class);
+
+         */
 
         usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);

@@ -1,4 +1,4 @@
-package com.example.trendpass;
+package com.example;
 
 import android.content.Context;
 

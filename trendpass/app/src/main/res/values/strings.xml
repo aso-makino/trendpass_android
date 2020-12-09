@@ -1,6 +1,25 @@
 <resources>
     <string name="app_name">trendpass</string>
-    <string name="description">picture</string>
+    <string name="title_activity_maps">Map</string>
+
+
+
+    <string name="title_activity_insert_review">InsertReviewActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_confirm_unsubscribe">ConfirmUnsubscribeActivity</string>
+    <string name="title_activity_complete_unsubscribe">CompleteUnsubscribeActivity</string>
+
+    <string name="description">pictures</string>
+
+
+
     <string name="myReviewBtn">口コミ</string>
     <string name="mySpotBtn">スポット</string>
     <string name="title_activity_drawer">DrawerActivity</string>
@@ -33,4 +52,37 @@
     <string name="settingsLogout">ログアウト</string>
     <string name="settingsUnsubscribe">Trend Passから退会</string>
     <string name="settings">設定</string>
+
+
+
+
+    <string-array name="sexList">
+    <item>男</item>
+    <item>女</item>
+    <item>未</item>
+
+    </string-array>
+
+    <string-array name="genreList">
+        <item>飲食店</item>
+        <item>教育機関</item>
+    </string-array>
+
+    <string-array name="distList">
+        <item>1kmから5km</item>
+        <item>5kmから10km</item>
+        <item>10kmから15km</item>
+    </string-array>
+
+    <string-array name="generationList">
+        <item>10代</item>
+        <item>20代</item>
+        <item>30代</item>
+    </string-array>
+
+    <string-array name="sortList">
+        <item>未選択</item>
+        <item>人気順</item>
+    </string-array>
+
 </resources>
