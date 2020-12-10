@@ -21,8 +21,6 @@ import java.nio.ByteBuffer;
 
 public class SignUpConfirmActivity extends AppCompatActivity {
 
-    private String picturePath;//画像パス
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +48,15 @@ public class SignUpConfirmActivity extends AppCompatActivity {
         TextView sexTV = findViewById(R.id.sexTV);
         TextView birthTV = findViewById(R.id.birthTV);
 
+        String pass2 = "";
+        for(int i = 0 ; i < pass.length() ;i++){
+            pass2 += "*";
+        }
+
 
         nameTV.setText(name);
         mailTV.setText(mail);
-        passTV.setText(pass);
+        passTV.setText(pass2);
         sexTV.setText(sex);
         birthTV.setText(birth);
         Picasso.with(this.getApplicationContext())
@@ -69,10 +72,12 @@ public class SignUpConfirmActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                System.out.println(userIcon);
+
                 String ip = getString(R.string.ip);
-                String postJson = "{\"userName\":\"" + name + "\",\"userMail\":\"" + mail + "\",\"password\":\"" + pass + "\",\"sex\":\"" + sex + "\",\"birth\":\"" + birth + "\"}";
+                String postJson = "{\"userName\":\"" + name + "\",\"mail\":\"" + mail + "\",\"password\":\"" + pass + "\",\"sex\":\"" + sex + "\",\"birth\":\"" + birth + "\"}";
                 AsyncSignUpActivity asyncSignUpActivity = new AsyncSignUpActivity(SignUpConfirmActivity.this);
-                asyncSignUpActivity.execute("http://" + ip + ":8080/trendpass/SignUp",  postJson,picturePath);
+                asyncSignUpActivity.execute("http://" + ip + ":8080/trendpass/SignUp",  postJson,userIcon);
             }
         });
 

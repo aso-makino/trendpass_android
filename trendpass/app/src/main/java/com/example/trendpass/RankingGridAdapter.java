@@ -78,6 +78,7 @@ public class RankingGridAdapter extends BaseAdapter {
                     intent.putExtra("longitude", spotReviewList.get(position).get("longitude"));
                     intent.putExtra("genreId", spotReviewList.get(position).get("genreId"));
                     intent.putExtra("reviewImage", spotReviewList.get(position).get("reviewImage"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
             });
@@ -112,6 +113,7 @@ public class RankingGridAdapter extends BaseAdapter {
                     intent.putExtra("longitude", spotReviewList.get(position).get("longitude"));
                     intent.putExtra("genreId", spotReviewList.get(position).get("genreId"));
                     intent.putExtra("reviewImage", spotReviewList.get(position).get("reviewImage"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
             });
@@ -147,6 +149,7 @@ public class RankingGridAdapter extends BaseAdapter {
                     intent.putExtra("longitude", spotReviewList.get(position).get("longitude"));
                     intent.putExtra("genreId", spotReviewList.get(position).get("genreId"));
                     intent.putExtra("reviewImage", spotReviewList.get(position).get("reviewImage"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
             });
@@ -174,6 +177,7 @@ public class RankingGridAdapter extends BaseAdapter {
                     intent.putExtra("longitude", spotReviewList.get(position).get("longitude"));
                     intent.putExtra("genreId", spotReviewList.get(position).get("genreId"));
                     intent.putExtra("reviewImage", spotReviewList.get(position).get("reviewImage"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }
             });
@@ -186,7 +190,7 @@ public class RankingGridAdapter extends BaseAdapter {
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "";
+        String ip = "192.168.2.103";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 imageList.get(number));

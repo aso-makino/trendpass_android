@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.example.trendpass.ui.login.LoginActivity;
+import com.example.trendpass.CompleteUnsubscribeActivity;
+import com.example.trendpass.DispMapActivity;
+import com.example.trendpass.DispSpotListActivity;
+import com.example.trendpass.MyPageActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.Headers;
@@ -23,14 +27,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AsyncSignUpActivity extends AsyncTask<String, Void, JSONObject> {
+public class AsyncInsert extends AsyncTask<String, Void, JSONObject> {
 
     //①USE WEEK REFERENCE
     private final Activity activity;
 
-    //②コンストラクタで、 呼び出し元Activityを弱参照で変数セット
-    public AsyncSignUpActivity(Activity activity) {
-        // USE WEEK REFERENCE
+    public AsyncInsert(Activity activity) {
         this.activity = activity;
     }
 
@@ -63,7 +65,7 @@ public class AsyncSignUpActivity extends AsyncTask<String, Void, JSONObject> {
                             RequestBody.create(TEXT, description)
                     )
                     .addFormDataPart(
-                            "userIcon",
+                            "reviewImage",
                             fileName,
                             RequestBody.create(IMAGE, new File(data[2]))
                     )
@@ -104,20 +106,19 @@ public class AsyncSignUpActivity extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    @Override
-    protected void onPostExecute(JSONObject res) {
-        super.onPostExecute(res);
-
+    protected void onPostExecute(JSONObject resJson) {
         String result;
+        System.out.println(resJson);
 
         try {
-            result = res.getString("result");
+            result = resJson.getString("result");
             if (result.equals("false")) {
-                Toast toast = Toast.makeText(activity, "登録に失敗しました", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(activity, "投稿に失敗しました", Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                Intent intent = new Intent(activity, LoginActivity.class);
-
+                Toast toast = Toast.makeText(activity, "投稿完了しました", Toast.LENGTH_LONG);
+                toast.show();
+                Intent intent = new Intent(activity, MyPageActivity.class);
                 activity.startActivity(intent);
             }
         } catch (JSONException e) {
@@ -125,3 +126,4 @@ public class AsyncSignUpActivity extends AsyncTask<String, Void, JSONObject> {
         }
     }
 }
+

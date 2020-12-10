@@ -1,7 +1,9 @@
 package com.example.trendpass;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,88 +14,66 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.trendpass.async.AsyncNearSpotListActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 public class NearSpotListActivity extends AppCompatActivity {
     AsyncNearSpotListActivity asyncNearSpotListActivity;
-    private String latitude;
-    private String longitude;
+
+    //現在地取得のための変数宣言
+    private double latitude;
+    private double longitude;
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_near_spot_list);
 
-        Intent intent = getIntent();
-        latitude = intent.getStringExtra("latitude");
-        longitude = intent.getStringExtra("longitude");
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        @SuppressLint("RestrictedApi")
+        LocationRequest locationRequest = new LocationRequest();
+
+        locationRequest.setPriority(
+// どれにするかはお好みで、ただしできない状況ではできないので
+//                LocationRequest.PRIORITY_HIGH_ACCURACY);
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//                LocationRequest.PRIORITY_LOW_POWER);
+//                LocationRequest.PRIORITY_NO_POWER);
+
 
         /////////////////////////////////////////////////////////
-        //テスト用
-        latitude = "35.681300";
-        longitude= "139.767165";
-
-        try {
-            String ip= getString(R.string.ip);
-            AsyncNearSpotListActivity asyncNearSpotListActivity = new AsyncNearSpotListActivity(NearSpotListActivity.this);
-            asyncNearSpotListActivity.execute(new URL("http://"+ip+":8080/trendpass/NearSpotList?latitude=" + latitude+"&longitude=" + longitude));
-
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        getLastLocation();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        ListView listView = (ListView)findViewById(R.id.spotList);
 
-        //リスト項目をクリック時に呼び出されるコールバックを登録
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            //リスト項目クリック時の処理
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                // clickされたpositionのtextとphotoのID
-                String spotId = asyncNearSpotListActivity.getSpotId(position);
-                double latitude = asyncNearSpotListActivity.getLatitude(position);
-                double longitude = asyncNearSpotListActivity.getLongitude(position);
-
-
-//                Intent intent = new Intent(NearSpotListActivity.this, InsertReviewActivity.class);
-//                // インテントにセット
-//                intent.putExtra("spotId", spotId);
-//                intent.putExtra("latitude", latitude);//緯度
-//                intent.putExtra("longitudo", longitude);//経度
-//                // Activity をスイッチする
-//                startActivity(intent);
-
-                //今回は、トースト表示
-                ListView listView =(ListView)parent;
-                String item=(String)listView.getItemAtPosition(position);
-                Toast.makeText(NearSpotListActivity.this, "Click: "+item, Toast.LENGTH_SHORT).show();
-            }
-        });
 
         Button insertSpotBtn = (Button)findViewById(R.id.InsertSpotBtn);
         insertSpotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                Intent intent = new Intent(NearSpotListActivity.this, InsertSpotActivity.class);
-//                // インテントにセット
-//                intent.putExtra("latitude", latitude);//緯度
-//                intent.putExtra("longitudo", longitude);//経度
-//                // Activity をスイッチする
-//                startActivity(intent);
+                Intent intent = new Intent(NearSpotListActivity.this, InsertSpotActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -103,12 +83,16 @@ public class NearSpotListActivity extends AppCompatActivity {
         ImageButton mapListButton = findViewById(R.id.listbtn);
         ImageButton userButton = findViewById(R.id.userbtn);
 
+
+
+
+
         //ユーザーボタンをタッチした時の処理
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             //ボタンタッチしてユーザー設定画面へ
             public void onClick(View view) {
-                //設定画面へ
+                //マイページ画面へ
                 Intent intent = new Intent(NearSpotListActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
@@ -121,32 +105,14 @@ public class NearSpotListActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 new AlertDialog.Builder(NearSpotListActivity.this)
-                        .setPositiveButton("現在地からスポット投稿", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                ////////////////////////////
-                                //現在地周辺スポット一覧画面へ
-//                                Intent intent = new Intent(NearSpotListActivity.this, NearSpotListActivity.class);
-//                                intent.putExtra("latitude",latitude);
-//                                intent.putExtra("longitude",longitude);
-//                                startActivity(intent);
-//                                Log.v("Alert", "スポット一覧へ");
-                                ///////////////////////////
-                            }
-                        })
-
-
-
                         .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-
                                 ////////////////////////////
                                 //位置情報履歴画面へ
-//                        Intent intent = new Intent(NearSpotListActivity.this,Activity.class);
-//                        startActivity(intent);
+                                Intent intent = new Intent(NearSpotListActivity.this,NearBySpotsListActivity.class);
+                                startActivity(intent);
 
                             }
                         })
@@ -157,8 +123,8 @@ public class NearSpotListActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 ////////////////////////////
                                 //口コミ投稿画面へ
-//                                Intent intent = new Intent(NearSpotListActivity.this, Activity.class);
-//                                startActivity(intent);
+                                Intent intent = new Intent(NearSpotListActivity.this, NearSpotListActivity.class);
+                                startActivity(intent);
                             }
                         })
                         .create()
@@ -191,5 +157,42 @@ public class NearSpotListActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void getLastLocation() {
+        fusedLocationClient.getLastLocation()
+                .addOnCompleteListener(
+                        this,
+                        new OnCompleteListener<Location>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                if (task.isSuccessful() && task.getResult() != null) {
+                                    location = task.getResult();
+
+                                    latitude =  location.getLatitude();
+                                    longitude = location.getLongitude();
+
+
+                                    System.out.println("おっけー");
+                                    System.out.println(longitude + "//" + latitude);
+                                } else {
+                                    Log.d("debug","計測不能");
+                                    System.out.println("計測不能");
+                                }
+
+                                try {
+                                    String ip= getString(R.string.ip);
+                                    AsyncNearSpotListActivity asyncNearSpotListActivity = new AsyncNearSpotListActivity(NearSpotListActivity.this);
+                                    System.out.println("http://"+ip+":8080/trendpass/NearSpotList?latitude="+latitude+"&longitude="+longitude);
+                                    asyncNearSpotListActivity.execute(new URL("http://"+ip+":8080/trendpass/NearSpotList?latitude="+latitude+"&longitude="+longitude));
+
+
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
     }
 }

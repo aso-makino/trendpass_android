@@ -1,8 +1,12 @@
 package com.example.trendpass.async;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import com.example.trendpass.MyPageActivity;
+import com.example.trendpass.ui.login.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,8 +117,10 @@ public class AsyncSignChangeActivity extends AsyncTask<String, Void, JSONObject>
                 Toast toast = Toast.makeText(activity, "更新に失敗しました", Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                Toast toast = Toast.makeText(activity, "更新に成功しました", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(activity, "更新完了しました", Toast.LENGTH_LONG);
                 toast.show();
+                Intent intent = new Intent(activity, MyPageActivity.class);
+                activity.startActivity(intent);
             }
         } catch (JSONException e) {
             e.printStackTrace();

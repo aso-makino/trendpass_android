@@ -1,8 +1,10 @@
 package com.example.trendpass;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,15 +12,24 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.trendpass.async.AsyncMyPageReviewActivity;
 import com.example.trendpass.async.AsyncMyPageSpotActivity;
+import com.google.android.gms.internal.zzcfy;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 
 public class MyPageActivity extends AppCompatActivity {
 
@@ -105,12 +116,16 @@ public class MyPageActivity extends AppCompatActivity {
         ImageButton mapListButton = findViewById(R.id.listbtn);
         ImageButton userButton = findViewById(R.id.userbtn);
 
+
+
+
+
         //ユーザーボタンをタッチした時の処理
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             //ボタンタッチしてユーザー設定画面へ
             public void onClick(View view) {
-                //設定画面へ
+                //マイページ画面へ
                 Intent intent = new Intent(MyPageActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
@@ -123,32 +138,14 @@ public class MyPageActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 new AlertDialog.Builder(MyPageActivity.this)
-                        .setPositiveButton("現在地からスポット投稿", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                ////////////////////////////
-                                //現在地周辺スポット一覧画面へ
-//                                Intent intent = new Intent(MyPageActivity.this, NearSpotListActivity.class);
-//                                intent.putExtra("latitude",latitude);
-//                                intent.putExtra("longitude",longitude);
-//                                startActivity(intent);
-//                                Log.v("Alert", "スポット一覧へ");
-                                ///////////////////////////
-                            }
-                        })
-
-
-
                         .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-
                                 ////////////////////////////
                                 //位置情報履歴画面へ
-//                        Intent intent = new Intent(MyPageActivity.this,Activity.class);
-//                        startActivity(intent);
+                                Intent intent = new Intent(MyPageActivity.this,NearBySpotsListActivity.class);
+                                startActivity(intent);
 
                             }
                         })
@@ -159,8 +156,8 @@ public class MyPageActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 ////////////////////////////
                                 //口コミ投稿画面へ
-//                                Intent intent = new Intent(MyPageActivity.this, Activity.class);
-//                                startActivity(intent);
+                                Intent intent = new Intent(MyPageActivity.this, NearSpotListActivity.class);
+                                startActivity(intent);
                             }
                         })
                         .create()
@@ -192,6 +189,11 @@ public class MyPageActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+
     }
+
+
+
 }
 

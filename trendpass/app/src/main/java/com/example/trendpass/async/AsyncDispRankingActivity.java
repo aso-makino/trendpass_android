@@ -31,6 +31,7 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
 
     protected void onPostExecute(JSONObject resJson) {
 
+        System.out.println(resJson);
         String spotId = "";
         String spotName = "";
         String latitude = "";
@@ -50,7 +51,7 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
-                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
+                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("latitude");
                 longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
                 genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
                 spotImage = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotImage");

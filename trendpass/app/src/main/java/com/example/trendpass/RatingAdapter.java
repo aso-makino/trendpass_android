@@ -1,6 +1,7 @@
 package com.example.trendpass;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +11,18 @@ import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 public class RatingAdapter extends BaseAdapter {
 
     private LayoutInflater inflater;
     private int layoutID;
-    private int[] reviewRatingList;
-    private String[] reviewContentList;
+    private List<HashMap<String,String>> reviewList;
+    private HashMap<String, String> spot;
+    private Context context;
 
     static class ViewHolder {
         RatingBar reviewRating;
@@ -23,20 +30,19 @@ public class RatingAdapter extends BaseAdapter {
     }
 
     public RatingAdapter(Context context, int itemLayoutId,
-                         int[] reviewRatings, String[] reviewContents){
+                         List<HashMap<String, String>> reviewList,HashMap<String, String> spot){
 
+        super();
         inflater = LayoutInflater.from(context);
         layoutID = itemLayoutId;
-
-        reviewRatingList = reviewRatings;
-        reviewContentList = reviewContents;
-
-        System.out.println(reviewContents);
+        this.reviewList = reviewList;
+        this.spot = spot;
+        this.context = context;
 
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         System.out.println(position);
         ViewHolder holder;
@@ -52,9 +58,28 @@ public class RatingAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.reviewRating.setRating(reviewRatingList[position]);
+        holder.reviewRating.setRating(Integer.parseInt(reviewList.get(position).get("rating")));
 
-        holder.reviewContent.setText(reviewContentList[position]);
+        holder.reviewContent.setText(reviewList.get(position).get("reviewContent"));
+
+            convertView.findViewById(R.id.review).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+                    Intent intent = new Intent(context, ReviewDetailActivity.class);
+                    intent.putExtra("spotId", spot.get("spotId"));
+                    intent.putExtra("reviewNumber", reviewList.get(position).get("reviewNumber"));
+                    intent.putExtra("reviewImage", reviewList.get(position).get("reviewImage"));
+                    intent.putExtra("reviewContent", reviewList.get(position).get("reviewContent"));
+                    intent.putExtra("rating", reviewList.get(position).get("rating"));
+                    intent.putExtra("spotName", spot.get("spotName"));
+                    intent.putExtra("reviewUserId", reviewList.get(position).get("reviewUserId"));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+            });
+
 
 
         return convertView;
@@ -62,7 +87,8 @@ public class RatingAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return reviewRatingList.length;
+        // 全要素数を返す
+        return reviewList.size();
     }
 
     @Override

@@ -82,7 +82,7 @@ public class SpotListGridAdapter extends BaseAdapter {
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "";
+        String ip = "192.168.2.103";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 imageList.get(number));
