@@ -204,7 +204,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             //ボタンタッチしてユーザー設定画面へ
             public void onClick(View view) {
                 //設定画面へ
-                Intent intent = new Intent(DispMapActivity.this, SettingsActivity.class);
+                Intent intent = new Intent(DispMapActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
         });
@@ -240,7 +240,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                                 Intent intent = new Intent(DispMapActivity.this,InsertReviewActivity.class);
                                 startActivity(intent);
 
-
                             }
                         })
                         // 口コミ投稿ボタンの処理
@@ -250,8 +249,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             public void onClick(DialogInterface dialog, int which) {
                                 ////////////////////////////
                                 //口コミ投稿画面へ
-                                Intent intent = new Intent(DispMapActivity.this, InsertReviewActivity.class);
-                                startActivity(intent);
+//                                Intent intent = new Intent(DispMapActivity.this, InsertReviewActivity.class);
+//                                startActivity(intent);
                             }
                         })
                         .create()

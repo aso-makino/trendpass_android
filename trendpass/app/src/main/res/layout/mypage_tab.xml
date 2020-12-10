@@ -8,22 +8,22 @@
     android:background="#00000000" >
 
     <Button
-        android:id="@+id/dispSpotBtn"
+        android:id="@+id/dispPassBtn"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:text="@string/mySpotBtn"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dispReviewBtn"
+        app:layout_constraintStart_toEndOf="@+id/dispRankingBtn"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/dispReviewBtn"
+        android:id="@+id/dispRankingBtn"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:text="@string/myReviewBtn"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/dispSpotBtn"
+        app:layout_constraintEnd_toStartOf="@+id/dispPassBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

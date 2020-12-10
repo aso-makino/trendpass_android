@@ -16,7 +16,9 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncMyPageReviewActivity extends AsyncBaseActivity {
 
@@ -37,8 +39,6 @@ public class AsyncMyPageReviewActivity extends AsyncBaseActivity {
 
         String spotId = "";
         String spotName = "";
-        String latitude = "";
-        String longitude = "";
         String genreId = "";
 
         String reviewNumber = "";
@@ -77,26 +77,25 @@ public class AsyncMyPageReviewActivity extends AsyncBaseActivity {
 
             final String[] image = new String[reviewSize];
 
+            System.out.println(resJson);
+            List<HashMap<String,String>> spotList = new ArrayList<>();
             for(int i = 0; i < reviewSize; i++){
 
                 HashMap<String,String> spotReview = new HashMap<String,String>();
 
                 spotId = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("spotName");
-                latitude = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("ratitude");
-                longitude = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("longitude");
                 genreId = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("genreId");
                 reviewNumber = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("reviewNumber");
                 reviewImage = resJson.getJSONArray("spotReviewList").getJSONObject(i).getString("reviewImage");
 
                 spotReview.put("spotId",spotId);
                 spotReview.put("spotName",spotName);
-                spotReview.put("latitude",latitude);
-                spotReview.put("longitude",longitude);
                 spotReview.put("genreId",genreId);
                 spotReview.put("reviewNumber",reviewNumber);
                 spotReview.put("reviewImage",reviewImage);
 
+                spotList.add(spotReview);
                 image[i] = reviewImage;
             }
 
@@ -109,7 +108,8 @@ public class AsyncMyPageReviewActivity extends AsyncBaseActivity {
             GridAdapter adapter = new GridAdapter(
                     activity.getApplicationContext(),
                     R.layout.mypage_layout,
-                    image
+                    image,
+                    spotList
             );
 
             System.out.println(4);

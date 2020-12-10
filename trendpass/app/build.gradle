@@ -3,6 +3,8 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+    useLibrary 'org.apache.http.legacy'
+
 
     defaultConfig {
         applicationId "com.example.trendpass"
@@ -33,7 +35,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment:2.3.1'
     implementation 'androidx.navigation:navigation-ui:2.3.1'
     implementation 'androidx.fragment:fragment:1.2.5'
@@ -41,12 +44,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
     'com.android.support:design:23.1.0'
-
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'org.jetbrains:annotations-java5:15.0'
+    implementation group: 'org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5'
+    //noinspection GradleCompatible
+    implementation 'com.android.support:appcompat-v7:23.0.0'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '3.8.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.gms:play-services:+'
     fileTree(dir: 'libs', include: ['*.jar'])
-
    'com.android.support:support-v4:22.+'
-
-
 }

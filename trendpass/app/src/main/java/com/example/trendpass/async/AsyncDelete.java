@@ -1,6 +1,13 @@
 package com.example.trendpass.async;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.trendpass.CompleteUnsubscribeActivity;
+import com.example.trendpass.ConfirmUnsubscribeActivity;
+import com.example.trendpass.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,19 +27,19 @@ public class AsyncDelete extends AsyncBaseActivity {
     }
 
     protected void onPostExecute(JSONObject resJson) {
-        boolean result;
-        String result_string = "成功";
-        try {
-            result = resJson.getBoolean("isSelect");
+        String result;
 
+        try {
+            result = resJson.getString("result");
+            if (result.equals("false")) {
+                Toast toast = Toast.makeText(activity, "退会に失敗しました", Toast.LENGTH_LONG);
+                toast.show();
+            } else {
+                Intent intent = new Intent(activity, CompleteUnsubscribeActivity.class);
+                activity.startActivity(intent);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
-            result_string = "失敗";
         }
-        /*
-        TextView tv = activity.findViewById(R.id.messageTextView);
-        tv.setText(result_string);
-
-         */
     }
 }

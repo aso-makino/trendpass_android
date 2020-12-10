@@ -2,24 +2,27 @@ package com.example.trendpass.async;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.example.trendpass.DispSpotDetailActivity;
 import com.example.trendpass.R;
 import com.example.trendpass.RatingAdapter;
 import com.squareup.picasso.Picasso;
@@ -27,16 +30,24 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AsyncSpotDetailActivity extends AsyncBaseActivity {
 
     private String url = null;
-    private int reviewRating[];
-    private String reviewContent[];
-    private String reviewImage[];
-    private  String spotName = "";
+
+    private String userId = "";
+    private String spotId = "";
+    private String spotName = "";
+    private String genreId = "";
+    private String reviewNumber = "";
+    private String reviewImage = "";
+    private String reviewContent = "";
+    private int rating = 0;
 
     public AsyncSpotDetailActivity(Activity activity) {
         super(activity);
@@ -52,7 +63,9 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
     @SuppressLint("ResourceType")
     protected void onPostExecute(final JSONObject resJson) {
 
-        int rating = 0;
+        System.out.println(resJson);
+
+        int ratingAverage = 0;
 
         try {
 
@@ -80,6 +93,20 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
                 }
             });
 
+            //　ユーザーIDを取得
+            SharedPreferences loginData = activity.getSharedPreferences("login_data", activity.MODE_PRIVATE);
+            final String userId = loginData.getString("userId", "");
+
+
+            //削除ボタン表示するかの判定
+            Button deleteBtn = (Button) activity.findViewById(R.id.delete_button);
+            if(userId.equals(resJson.getJSONObject("spot").getString("userId"))) {
+                deleteBtn.setVisibility(View.VISIBLE);
+            }else{
+                deleteBtn.setVisibility(View.INVISIBLE);
+
+            }
+
 
             //スポット画像
             Picasso.with(activity.getApplicationContext())
@@ -95,24 +122,47 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
             spotNametv.setText(spotName);
             spotNametv.setTextSize(22.0f);
 
-            //口コミ
+            //口コミ件数
             int reviewCount = Integer.parseInt(resJson.getString("reviewCount"));
 
+            //スポット情報
+            HashMap<String,String> spot = new HashMap<String,String>();
+            spotId = resJson.getJSONObject("spot").getString("spotId");
+            spotName = resJson.getJSONObject("spot").getString("spotName");
+            genreId = resJson.getJSONObject("spot").getString("genreId");
 
-            reviewImage = new String[reviewCount];
-            reviewRating = new int[reviewCount];
-            reviewContent = new String[reviewCount];
+            spot.put("spotId",spotId);
+            spot.put("spotName",spotName);
+            spot.put("genreId",genreId);
 
-            for (int i = 0 ; i<reviewCount;i++) {
+            //口コミ情報
+            List<HashMap<String,String>> reviewList = new ArrayList<>();
+            for(int i = 0; i < reviewCount; i++){
 
-                reviewImage[i] = resJson.getJSONArray("review").getJSONObject(i).getString("reviewImage");
-                reviewRating[i] = Integer.parseInt(resJson.getJSONArray("review").getJSONObject(i).getString("evaluation"));
-                reviewContent[i] = resJson.getJSONArray("review").getJSONObject(i).getString("reviewContent");
-                rating += reviewRating[i];
+                HashMap<String,String> review = new HashMap<String,String>();
+
+
+                reviewNumber = resJson.getJSONArray("review").getJSONObject(i).getString("reviewNumber");
+                reviewImage = resJson.getJSONArray("review").getJSONObject(i).getString("reviewImage");
+                reviewContent = resJson.getJSONArray("review").getJSONObject(i).getString("reviewContent");
+                rating = Integer.parseInt(resJson.getJSONArray("review").getJSONObject(i).getString("evaluation"));
+                this.userId = resJson.getJSONArray("review").getJSONObject(i).getString("userId");
+
+
+
+                review.put("reviewNumber",reviewNumber);
+                review.put("reviewImage",reviewImage);
+                review.put("reviewContent",reviewContent);
+                review.put("rating",String.valueOf(rating));
+                review.put("reviewUserId",this.userId);
+
+                reviewList.add(review);
+
+                ratingAverage += rating;
                 }
 
             //レイティングバー
-            rating = rating/reviewCount;
+            ratingAverage = ratingAverage/reviewCount;
             RatingBar ratingBar = (RatingBar) activity.findViewById(R.id.ratingBar);
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 try {
@@ -124,35 +174,54 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
                     e.printStackTrace();
                 }
             }
-            ratingBar.setRating(rating);
+            ratingBar.setRating(ratingAverage);
 
             // ListViewのインスタンスを生成
             ListView listView = activity.findViewById(R.id.reviewList);
 
             // BaseAdapter を継承したadapterのインスタンスを生成
-            // レイアウトファイル list_items.xml を
-            // activity_main.xml に inflate するためにadapterに引数として渡す
             BaseAdapter adapter = new RatingAdapter(activity.getApplicationContext(),
-                    R.layout.list_disp_spot_detail, reviewRating,reviewContent);
+                    R.layout.list_disp_spot_detail, reviewList,spot);
 
             // ListViewにadapterをセット
             listView.setAdapter(adapter);
+
+            //削除ボタンをタッチした時の処理
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                //ボタンタッチしたら確認ダイアログ
+                public void onClick(View view) {
+
+                    new AlertDialog.Builder(activity)
+                            .setTitle( "スポット削除確認" )
+                            .setMessage( "スポットを削除します。\nよろしいですか" )
+                            .setIcon( R.drawable.rogo )
+                            .setPositiveButton( "削除", new  DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // クリックしたときの処理
+
+                                    AsyncSpotDeleteActivity asyncSpotDeleteActivity = new AsyncSpotDeleteActivity(activity);
+                                    try {
+                                        asyncSpotDeleteActivity.execute(new URL(url.replace("DispSpotDetail?spotId="+resJson.getJSONObject("spot").getString("spotId"),"DeleteSpotServlet?spotId=" + spotId+"&userId="+userId)));
+                                    } catch (MalformedURLException | JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            })
+                            .setNegativeButton("キャンセル", new  DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // クリックしたときの処理
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
+            });
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-    }
-    public String getReviewImage(int position){
-        return reviewImage[position];
-    }
-    public int getReviewRating(int position){
-        return reviewRating[position];
-    }
-    public String getReviewContent(int position){
-        return reviewContent[position];
-    }
-    public String getSpotName(){
-        return spotName;
     }
 }

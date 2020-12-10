@@ -1,44 +1,66 @@
 package com.example.trendpass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import com.example.trendpass.async.AsyncSpotDeleteActivity;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ReviewDetailActivity extends AppCompatActivity {
 
+
+    private String spotId;
+    private String reviewNumber;
+    private String reviewUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review_detail);
 
-        //ロゴ
-        Picasso.with(this.getApplicationContext())
-                .load(R.drawable.rogo)
-                .resize(500,500)
-                .placeholder(R.drawable.noimage)
-                .centerInside()
-                .into((ImageView) this.findViewById(R.id.rogoImg));
+        //　ユーザーIDを取得
+        SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
+        String userId = loginData.getString("userId", "");
 
         Intent intent = getIntent();
         // intentで受け取ったものを取り出す
-        int reviewRating = intent.getIntExtra("reviewRating",0);
+        spotId = intent.getStringExtra("spotId");
+        reviewNumber = intent.getStringExtra("reviewNumber");
+        int reviewRating = intent.getIntExtra("rating",0);
         String reviewContent = intent.getStringExtra("reviewContent");
         String reviewImage = intent.getStringExtra("reviewImage");
         String spotName = intent.getStringExtra("spotName");
+        reviewUserId = intent.getStringExtra("reviewUserId");
+
+        Button deleteBtn = (Button) findViewById(R.id.delete_button);
+        if(userId.equals(reviewUserId)) {
+            deleteBtn.setVisibility(View.VISIBLE);
+        }else{
+            deleteBtn.setVisibility(View.INVISIBLE);
+
+        }
+
 
         //スポット名
         TextView spotNametv = this.findViewById(R.id.spotName);
@@ -52,7 +74,7 @@ public class ReviewDetailActivity extends AppCompatActivity {
                 .resize(500,500)
                 .placeholder(R.drawable.noimage)
                 .centerInside()
-                .into((ImageView) this.findViewById(R.id.reviewImg));
+                .into((ImageView) this.findViewById(R.id.spotImg));
 
         //評価
         RatingBar ratingBar = (RatingBar) this.findViewById(R.id.ratingBar);
@@ -78,31 +100,116 @@ public class ReviewDetailActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        findViewById(R.id.mapbtn).setOnClickListener(new View.OnClickListener() {
+        Button deleteBtn = findViewById(R.id.delete_button);
+        //削除ボタンをタッチした時の処理
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("mapが押されました");
+            //ボタンタッチしたら確認ダイアログ
+            public void onClick(View view) {
+                new AlertDialog.Builder(ReviewDetailActivity.this)
+                        .setTitle( "レビュー削除確認" )
+                        .setMessage( "レビューを削除します。\nよろしいですか" )
+                        .setIcon( R.drawable.rogo )
+                        .setPositiveButton( "削除", new  DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // クリックしたときの処理
+                                AsyncSpotDeleteActivity asyncSpotDeleteActivity = new AsyncSpotDeleteActivity(ReviewDetailActivity.this);
+                                try {
+                                    String ip= getString(R.string.ip);
+                                    asyncSpotDeleteActivity.execute(new URL("http://"+ip+":8080/trendpass/DeleteReviewServlet?spotId=" +spotId+"&reviewNumber="+reviewNumber+"&userId="+reviewUserId));
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .setNegativeButton("キャンセル", new  DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // クリックしたときの処理
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
             }
         });
 
-        findViewById(R.id.insertbtn).setOnClickListener(new View.OnClickListener() {
+
+        //footerの生成
+        ImageButton mapButton = findViewById(R.id.mapbtn);
+        ImageButton insertButton = findViewById(R.id.insertbtn);
+        ImageButton mapListButton = findViewById(R.id.listbtn);
+        ImageButton userButton = findViewById(R.id.userbtn);
+
+
+
+
+
+        //ユーザーボタンをタッチした時の処理
+        userButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("insertが押されました");
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //マイページ画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, MyPageActivity.class);
+                startActivity(intent);
             }
         });
 
-        findViewById(R.id.listbtn).setOnClickListener(new View.OnClickListener() {
+        //投稿ボタンをタッチした時の処理
+        insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("listが押されました");
+            //ボタンタッチして投稿種類選択ダイアログ表示
+            public void onClick(View view) {
+
+                new AlertDialog.Builder(ReviewDetailActivity.this)
+                        .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                ////////////////////////////
+                                //位置情報履歴画面へ
+                                Intent intent = new Intent(ReviewDetailActivity.this,NearBySpotsListActivity.class);
+                                startActivity(intent);
+
+                            }
+                        })
+                        // 口コミ投稿ボタンの処理
+                        .setNegativeButton("口コミ投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            //口コミ投稿ボタンをタッチ
+                            public void onClick(DialogInterface dialog, int which) {
+                                ////////////////////////////
+                                //口コミ投稿画面へ
+                                Intent intent = new Intent(ReviewDetailActivity.this, NearSpotListActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
-        findViewById(R.id.userbtn).setOnClickListener(new View.OnClickListener() {
+
+        //スポットリストボタンをタッチした時の処理
+        mapListButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("userが押されました");
+            //ボタンタッチスポット一覧表示画面へ遷移する
+            public void onClick(View view) {
+                ///////////////////////////
+                //現在地周辺スポット一覧画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, DispSpotListActivity.class);
+                startActivity(intent);
+                Log.v("Alert", "スポット一覧へ");
+            }
+        });
+
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(ReviewDetailActivity.this, DispMapActivity.class);
+                startActivity(intent);
             }
         });
 

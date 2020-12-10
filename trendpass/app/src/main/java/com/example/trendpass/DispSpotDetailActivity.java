@@ -1,15 +1,22 @@
 package com.example.trendpass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.trendpass.async.AsyncSpotDeleteActivity;
 import com.example.trendpass.async.AsyncSpotDetailActivity;
 import com.squareup.picasso.Picasso;
 
@@ -19,22 +26,18 @@ import java.net.URL;
 public class DispSpotDetailActivity extends AppCompatActivity{
 
     AsyncSpotDetailActivity asyncSpotDetailActivity;
+    AsyncSpotDeleteActivity asyncSpotDeleteActivity;
+
+    private String spotId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disp_spot_detail);
 
-        //ロゴ
-        Picasso.with(this.getApplicationContext())
-                .load(R.drawable.rogo)
-                .resize(500,500)
-                .placeholder(R.drawable.noimage)
-                .centerInside()
-                .into((ImageView) this.findViewById(R.id.rogoImg));
 
         Intent intent = getIntent();
-        String spotId = intent.getStringExtra("spotId");
+        spotId = intent.getStringExtra("spotId");
 
         try {
             String ip= getString(R.string.ip);
@@ -51,60 +54,84 @@ public class DispSpotDetailActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
 
-        ListView listView = (ListView)findViewById(R.id.reviewList);
 
-        //リスト項目をクリック時に呼び出されるコールバックを登録
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            //リスト項目クリック時の処理
+        //footerの生成
+        ImageButton mapButton = findViewById(R.id.mapbtn);
+        ImageButton insertButton = findViewById(R.id.insertbtn);
+        ImageButton mapListButton = findViewById(R.id.listbtn);
+        ImageButton userButton = findViewById(R.id.userbtn);
+
+
+
+
+
+        //ユーザーボタンをタッチした時の処理
+        userButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,long id) {
-                Intent intent = new Intent(DispSpotDetailActivity.this, ReviewDetailActivity.class);
-                // clickされたpositionのtextとphotoのID
-                String reviewImage = asyncSpotDetailActivity.getReviewImage(position);
-                int reviewRating = asyncSpotDetailActivity.getReviewRating(position);
-                String reviewContent = asyncSpotDetailActivity.getReviewContent(position);
-                String spotName = asyncSpotDetailActivity.getSpotName();
-
-                // インテントにセット
-                intent.putExtra("reviewImage",reviewImage);
-                intent.putExtra("reviewRating", reviewRating);
-                intent.putExtra("reviewContent", reviewContent);
-                intent.putExtra("spotName",spotName);
-                // Activity をスイッチする
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //マイページ画面へ
+                Intent intent = new Intent(DispSpotDetailActivity.this, MyPageActivity.class);
                 startActivity(intent);
-
-                //今回は、トースト表示
-                //ListView listView =(ListView)parent;
-                //String item=(String)listView.getItemAtPosition(position);
-                //Toast.makeText(DispSpotDetailActivity.this, "Click: "+item, Toast.LENGTH_SHORT).show();
             }
         });
 
-        findViewById(R.id.mapbtn).setOnClickListener(new View.OnClickListener() {
+        //投稿ボタンをタッチした時の処理
+        insertButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("mapが押されました");
+            //ボタンタッチして投稿種類選択ダイアログ表示
+            public void onClick(View view) {
+
+                new AlertDialog.Builder(DispSpotDetailActivity.this)
+                        .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                ////////////////////////////
+                                //位置情報履歴画面へ
+                                Intent intent = new Intent(DispSpotDetailActivity.this,NearBySpotsListActivity.class);
+                                startActivity(intent);
+
+                            }
+                        })
+                        // 口コミ投稿ボタンの処理
+                        .setNegativeButton("口コミ投稿", new DialogInterface.OnClickListener() {
+                            @Override
+                            //口コミ投稿ボタンをタッチ
+                            public void onClick(DialogInterface dialog, int which) {
+                                ////////////////////////////
+                                //口コミ投稿画面へ
+                                Intent intent = new Intent(DispSpotDetailActivity.this, NearSpotListActivity.class);
+                                startActivity(intent);
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
 
-        findViewById(R.id.insertbtn).setOnClickListener(new View.OnClickListener() {
+
+        //スポットリストボタンをタッチした時の処理
+        mapListButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("insertが押されました");
+            //ボタンタッチスポット一覧表示画面へ遷移する
+            public void onClick(View view) {
+                ///////////////////////////
+                //現在地周辺スポット一覧画面へ
+                Intent intent = new Intent(DispSpotDetailActivity.this, DispSpotListActivity.class);
+                startActivity(intent);
+                Log.v("Alert", "スポット一覧へ");
             }
         });
 
-        findViewById(R.id.listbtn).setOnClickListener(new View.OnClickListener() {
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.out.println("listが押されました");
-            }
-        });
-
-        findViewById(R.id.userbtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("userが押されました");
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(DispSpotDetailActivity.this, DispMapActivity.class);
+                startActivity(intent);
             }
         });
 

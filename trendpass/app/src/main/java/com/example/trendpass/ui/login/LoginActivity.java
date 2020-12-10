@@ -23,6 +23,7 @@ import androidx.lifecycle.Observer;
 
 import com.example.trendpass.MyPageActivity;
 import com.example.trendpass.R;
+import com.example.trendpass.SignUpActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -164,8 +165,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // 会員登録へ遷移
-                //Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
         });
     }

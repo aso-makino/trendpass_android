@@ -62,8 +62,8 @@ public class SettingsActivity extends AppCompatActivity {
         signchangeRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(SettingsActivity.this, SignChangeActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(SettingsActivity.this, SignChangeActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -71,8 +71,8 @@ public class SettingsActivity extends AppCompatActivity {
         unsubscribeRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(SettingsActivity.this, UnsubscribeActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(SettingsActivity.this, ConfirmUnsubscribeActivity.class);
+                startActivity(intent);
             }
         });
     }
