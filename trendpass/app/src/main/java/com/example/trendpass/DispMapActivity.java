@@ -47,6 +47,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Timer;
 
 import static com.example.trendpass.LocationService.serviceLatitude;
 import static com.example.trendpass.LocationService.serviceLongitude;
@@ -84,6 +85,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     private double minDist = 0.0;
     private double maxDist = 0.0;
     private int generation = 0;
+    //タイマー処理用
+    private Timer timer = new Timer();
 
 
     @Override
@@ -93,11 +96,13 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+
         //マップの形成
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
 
         // receiver（サービスから値を取得する際使うやつ）
         UpdateReceiver receiver = new UpdateReceiver();
@@ -110,7 +115,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                //マルチスレッドにする処理
                 // Android 6, API 23以上でパーミッシンの確認
                 if (Build.VERSION.SDK_INT >= 23) {
                     checkMultiPermissions();
@@ -120,10 +125,10 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     public void run() {
 
                         //位置情報を取得するサービスを起動する
-                        startLocationService();
+                      //  startLocationService();
                     }
-
                 });
+                //マルチスレッド終わり
 
             }
         }).start();
@@ -228,7 +233,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                                 startActivity(intent);
                                 Log.v("Alert", "スポット一覧へ");
                                 ///////////////////////////
-
                             }
                         })
 
@@ -628,8 +632,9 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     latlng = new LatLng(dispMapLatitude, dispMapLongitude);
 
                     CameraPosition cameraPos = new CameraPosition.Builder()
-                            .target(latlng).zoom(7.0f)
-                            .bearing(0).build();
+                            .target(latlng).zoom(15.0f)
+                            .bearing(0).tilt(60).build();
+
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
 
                     CameraUpdate update = CameraUpdateFactory.newLatLng(latlng);
@@ -651,8 +656,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                 public void onProviderDisabled (String provider){
 
                 }
-
-
 
                 @Override
                 public void onMapReady (GoogleMap googleMap){
@@ -702,10 +705,18 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                                 // camera 移動
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curr, 10));
                                 CameraUpdate cUpdate = CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(latitude, longitude), 12);
+                                        new LatLng(serviceLatitude, serviceLongitude), 12);
+
                                 mMap.moveCamera(cUpdate);
 
                                 mMap.getUiSettings().setZoomControlsEnabled(true);
+
+                                CameraPosition cameraPos = new CameraPosition.Builder()
+                                        .target(curr).zoom(12.0f)
+                                        .bearing(0).build();
+
+                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
+
 
                                 // MyLocationButtonを有効に
                                 UiSettings settings = mMap.getUiSettings();
@@ -731,14 +742,12 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
                         @Override
                         public void onMapClick(LatLng tapLocation) {
-                            LocationService ls = new LocationService();
                             //位置情報が取れている
                             // tapされた位置の緯度経度
                             latlng = new LatLng(dispMapLatitude, dispMapLongitude);
 
-                          //  String locationName = ls.getLocationName(dispMapLatitude,dispMapLongitude);
 
-                            String str = String.format(Locale.JAPAN, "%s", "ワンクリック");
+                            String str = String.format(Locale.JAPAN, "%s", "tapLocation");
 
 
                             //マップにマーカーをセットする
@@ -749,13 +758,10 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
 
                             LatLng location = new LatLng(dispMapLatitude, dispMapLongitude);
-                            CameraPosition cameraPos = new CameraPosition.Builder()
-                                    .target(location).zoom(12.0f)
-                                    .bearing(0).build();
+
 
                             setMarker(dispMapLatitude, dispMapLongitude);
 
-                            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
                             MarkerOptions options = new MarkerOptions();
                             options.position(location);
                             // マップにマーカー追加
@@ -788,9 +794,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     });
                 }
 
-
-
-                //マッカーのセット
+    //マッカーのセット
                 private void setMarker ( double latitude, double longitude){
                     latlng = new LatLng(latitude, longitude);
                     MarkerOptions markerOptions = new MarkerOptions();

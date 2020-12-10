@@ -19,7 +19,6 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.TextView;
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ScheduledExecutorService;
 
 import static com.example.trendpass.DispMapActivity.running;
 import static com.example.trendpass.DispMapActivity.saveName;
@@ -55,10 +53,7 @@ public class LocationService extends IntentService implements LocationListener {
     private StringBuffer strBuf = new StringBuffer();
     private static final int MinTime = 1000;
     private static final float MinDistance = 50;
-    private ScheduledExecutorService service;
-    private Handler handler = new Handler();
 
-    private final int REQUEST_MULTI_PERMISSIONS = 1001;
     private static final String TAG = "LocationService";
     private LocationManager mLocationManager = null;
     private static final int LOCATION_INTERVAL = 10000; //10秒
@@ -236,7 +231,6 @@ public class LocationService extends IntentService implements LocationListener {
                } catch (IOException e) {
                    e.printStackTrace();
                }
-
                //ユーザーが保存を選択している場合は位置情報をxmlファイルに書き込む
                if(saveName != null) {
                    saveLocation(servicelocationName, serviceLatitude, serviceLongitude, getTime, userId, saveName);
@@ -248,7 +242,6 @@ public class LocationService extends IntentService implements LocationListener {
                count++;
                    //60秒間停止する
                    Thread.sleep(60000);
-
                }
 
         } catch (InterruptedException e) {
@@ -261,7 +254,7 @@ public class LocationService extends IntentService implements LocationListener {
         String returnLocationName;
 
         //error//
-        Geocoder geocoder = new Geocoder(this, Locale.JAPAN);
+        Geocoder geocoder = new Geocoder(this, Locale.JAPAN );
         List<Address> addresses = null;
         try {
              returnLocationName = "";
