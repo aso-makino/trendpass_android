@@ -166,20 +166,14 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                 //保存ダイアログを表示
                 new AlertDialog.Builder(DispMapActivity.this)
                         .setTitle("位置情報を保存しますか")
-                        //保存名をファイル名とする
                         .setMessage("保存名")
                         .setView(editText)
                         .setPositiveButton("はい", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                //はいボタンを押した時の処理
 
-                                //保存名
+                                //保存名(位置情報の保存に使用する)
                                 saveName = editText.getText().toString();
-
-                                Intent intent = new Intent(DispMapActivity.this,UpdateReceiver.class);
-
-                                intent.putExtra("keyword", saveName);
 
                             }
                         })
