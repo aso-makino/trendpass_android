@@ -1,11 +1,17 @@
 package com.example.trendpass;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -48,6 +54,34 @@ public class DispSpotDetailActivity extends AppCompatActivity{
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+
+        //画像タップ時に拡大
+        final ImageView spotImageV = (ImageView)findViewById(R.id.spotImg);
+        spotImageV.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ImageView imageView = new ImageView(DispSpotDetailActivity.this);
+                Bitmap bitmap = ((BitmapDrawable)spotImageV.getDrawable()).getBitmap();
+                imageView.setImageBitmap(bitmap);
+                // ディスプレイの幅を取得する（API 13以上）
+                Display display =  getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+
+                float factor =  width / bitmap.getWidth();
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                // ダイアログを作成する
+                Dialog dialog = new Dialog(DispSpotDetailActivity.this);
+                // タイトルを非表示にする
+                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(imageView);
+                dialog.getWindow().setLayout((int)(bitmap.getWidth()*factor), (int)(bitmap.getHeight()*factor));
+                // ダイアログを表示する
+                dialog.show();
+            }
+        });
 
     }
 

@@ -10,7 +10,7 @@ tools:context=".DispSpotListActivity">
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="70dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,36 +23,36 @@ tools:context=".DispSpotListActivity">
 
     </LinearLayout>
 
-<GridView
-    android:id="@+id/gridview"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:layout_marginBottom="50dp"
-    android:background="#E4E4E4"
-    android:numColumns="3"
-    android:stretchMode="columnWidth"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-    app:layout_constraintVertical_bias="1.0"
-    tools:ignore="MissingConstraints" />
+    <GridView
+        android:id="@+id/gridview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        tools:ignore="MissingConstraints"
+        android:cacheColorHint="#ff000000"
+        />
 
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="vertical"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="1.0"
-    tools:ignore="MissingConstraints">
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="MissingConstraints">
 
-    <!-- 別のレイアウトファイルを挿入 -->
-    <include layout="@layout/footer" />
+        <!-- 別のレイアウトファイルを挿入 -->
+        <include layout="@layout/footer" />
 
-</LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

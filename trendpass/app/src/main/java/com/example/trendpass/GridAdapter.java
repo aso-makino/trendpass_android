@@ -2,9 +2,13 @@ package com.example.trendpass;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -16,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 public class GridAdapter extends BaseAdapter {
 
     private List<HashMap<String,String>> spotReviewList;
@@ -23,6 +29,7 @@ public class GridAdapter extends BaseAdapter {
     private int layoutId;
     private Context context;
     private List<String> imageList = new ArrayList<>();
+    private int ScreenWHalf = 0;
 
     public GridAdapter(Context context,
                        int layoutId,
@@ -35,7 +42,21 @@ public class GridAdapter extends BaseAdapter {
          this.spotReviewList = spotReviewList;
         this.context = context;
         Collections.addAll(imageList, image);
+
+        // 画面の横幅の半分を計算
+        WindowManager wm = (WindowManager)
+                context.getSystemService(WINDOW_SERVICE);
+        if(wm != null){
+            Display disp = wm.getDefaultDisplay();
+            Point size = new Point();
+            disp.getSize(size);
+
+            int screenWidth = size.x;
+            ScreenWHalf = screenWidth/3;
+            Log.d("debug","ScreenWidthHalf="+ScreenWHalf);
+        }
     }
+
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -55,9 +76,10 @@ public class GridAdapter extends BaseAdapter {
         System.out.println(1);
         Picasso.with(context)
                 .load(addUrl(position))
-                .resize(500, 500)
+                .resize(ScreenWHalf, ScreenWHalf)
                 .placeholder(R.drawable.insert)
                 .error(R.drawable.noimage)
+                .centerCrop()
                 .into(img);
 
 
@@ -84,7 +106,7 @@ public class GridAdapter extends BaseAdapter {
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "192.168.2.103";
+        String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 imageList.get(number));

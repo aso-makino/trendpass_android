@@ -4,7 +4,24 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+
+    <View
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#aaaaaa"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
 
     <ImageButton
         android:id="@+id/mapbtn"
@@ -41,5 +58,7 @@
         android:layout_weight="1"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/user" />
+
+    </LinearLayout>
 
 </LinearLayout>

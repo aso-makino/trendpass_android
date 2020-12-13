@@ -1,6 +1,7 @@
 package com.example.trendpass;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -8,8 +9,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.trendpass.async.AsyncInsert;
 import com.squareup.picasso.Picasso;
@@ -33,8 +37,10 @@ public class InsertReviewActivity extends AppCompatActivity {
     private String spotId;
     private String spotName;
     private String spotImage;
-    private int num;
-    private float rating;
+    private int rating;
+    private RatingBar ratingBar;
+    private ConstraintLayout mainLayout;
+    private ImageView reviewImgV;
 
     //画像系の変数宣言
     private static final int REQUEST_GALLERY = 0;
@@ -57,13 +63,9 @@ public class InsertReviewActivity extends AppCompatActivity {
         spotImage = intent.getStringExtra("spotImage");
 
         /*レーティングバー周りの処理*/
-        RatingBar ratingBar = (RatingBar) findViewById(R.id.ratingBar2);
+        ratingBar = (RatingBar) findViewById(R.id.ratingBar2);
         // ☆の最大数の設定及び取得
         ratingBar.setNumStars(5);
-        num = ratingBar.getNumStars();
-        // 現在のレイティングの設定及び取得
-        ratingBar.setRating(0);
-        rating = ratingBar.getRating();
 
         TextView spotNametxtv = findViewById(R.id.spotName);
         spotNametxtv.setText(spotName);
@@ -75,6 +77,18 @@ public class InsertReviewActivity extends AppCompatActivity {
                 .placeholder(R.drawable.noimage)
                 .centerCrop()
                 .into((ImageView) findViewById(R.id.spotImg));
+
+        //画面全体のレイアウト
+        mainLayout = findViewById(R.id.constraintLayout);
+        mainLayout.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                //キーボード表示を制御するためのオブジェクト
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+            }
+        });
     }
 
     @Override
@@ -102,18 +116,63 @@ public class InsertReviewActivity extends AppCompatActivity {
 
             public void onClick(View v) {
 
+                // 現在のレイティングの設定及び取得
+                rating = (int) ratingBar.getRating();
+
                 String ip = getString(R.string.ip);
-                EditText eText2 = (EditText) findViewById(R.id.review2);
-                String review2 = eText2.getText().toString();
+                final EditText reviewET2 = (EditText) findViewById(R.id.review2);
+                String review2 = reviewET2.getText().toString();
                 System.out.println(userId);
                 System.out.println(spotId);
-                System.out.println(num);
+                System.out.println(rating);
                 System.out.println(review2);
 
-                String postJson = "{\"userId\":\"" + userId + "\",\"spotId\":\"" + spotId + "\",\"rating\":\"" + num + "\",\"reviewContent\":\"" + review2 + "\"}";
-                System.out.println(postJson);
-                AsyncInsert asyncInsert = new AsyncInsert(InsertReviewActivity.this);
-                asyncInsert.execute("http://" + ip + ":8080/trendpass/InsertReviewServlet",postJson,picturePath);
+                // 未入力チェック
+                if (review2.length() == 0 || rating < 1 || picturePath == null) {
+
+
+                    final View scrollView = findViewById(R.id.scrollView);
+
+                    if (review2.length() == 0) {
+                        reviewET2.setError("口コミを入力してください");
+                        scrollView.post(new Runnable() {
+                            public void run() {
+                                scrollView.scrollTo(0, reviewET2.getBottom());
+                            }
+                        });
+                    }else if (rating < 1) {
+                        TextView ratingErr = findViewById(R.id.ratingErr);
+                        ratingErr.setText("評価を入力してください");
+                        scrollView.post(new Runnable() {
+                            public void run() {
+                                scrollView.scrollTo(0, ratingBar.getBottom());
+                            }
+                        });
+                    }else if(picturePath == null){
+                        reviewImgV = (ImageView) findViewById(R.id.reviewImg);
+                        TextView imageErr = findViewById(R.id.imageErr);
+                        imageErr.setText("画像を選択してください");
+                        scrollView.post(new Runnable() {
+                            public void run() {
+                                scrollView.scrollTo(0, reviewImgV.getBottom());
+                            }
+                        });
+                    }
+
+                } else if ( review2.length() <= 500 && rating >= 1) {
+
+                    /*
+
+                     * @param spotReview スポットのレビュー
+                     * @param ratingNumber スポット評価☆
+                     * @param userId　ユーザーID
+                     * @param picturePath　画像パス
+                     */
+                    String postJson = "{\"userId\":\"" + userId + "\",\"spotId\":\"" + spotId + "\",\"rating\":\"" + rating + "\",\"reviewContent\":\"" + review2 + "\"}";
+                    System.out.println(postJson);
+                    AsyncInsert asyncInsert = new AsyncInsert(InsertReviewActivity.this);
+                    asyncInsert.execute("http://" + ip + ":8080/trendpass/InsertReviewServlet", postJson, picturePath);
+                }
 
             }
         });
@@ -128,7 +187,7 @@ public class InsertReviewActivity extends AppCompatActivity {
 
             try {
                 ContentResolver contentResolver = getContentResolver();
-                ImageView reviewImgV = (ImageView) findViewById(R.id.reviewImg);
+                reviewImgV = (ImageView) findViewById(R.id.reviewImg);
 
                 // 選択した画像を表示
                 InputStream in = contentResolver.openInputStream(data.getData());
@@ -146,9 +205,20 @@ public class InsertReviewActivity extends AppCompatActivity {
             // 例外を受け取る
             try {
 
+                Uri selectedImage = data.getData();
+                String wholeID = DocumentsContract.getDocumentId(selectedImage);
+
+                // Split at colon, use second item in the array
+                String id = wholeID.split(":")[1];
+
+                String[] column = { MediaStore.Images.Media.DATA };
+
+                // where id is equal to
+                String sel = MediaStore.Images.Media._ID + "=?";
+
                 cursor = contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        null, null, null, null);
+                        null, sel, new String[]{ id },null);
 
                 if (cursor != null && cursor.moveToFirst()) {
                     String str = String.format(
@@ -158,8 +228,6 @@ public class InsertReviewActivity extends AppCompatActivity {
                             MediaStore.Images.Media.DATA));
                     cursor.close();
 
-
-                    cursor.close();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

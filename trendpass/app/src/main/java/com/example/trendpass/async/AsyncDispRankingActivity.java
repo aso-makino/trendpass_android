@@ -3,7 +3,6 @@ package com.example.trendpass.async;
 import android.app.Activity;
 import android.widget.GridView;
 
-import com.example.trendpass.GridAdapter;
 import com.example.trendpass.R;
 import com.example.trendpass.RankingGridAdapter;
 
@@ -75,7 +74,7 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
             // activity_main.xml に inflate するためにGridAdapterに引数として渡す
             RankingGridAdapter adapter = new RankingGridAdapter(
                     activity.getApplicationContext(),
-                    R.layout.ranking_rayout,
+                    R.layout.ranking_layout,
                     image,
                     spotList
             );

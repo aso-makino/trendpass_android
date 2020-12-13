@@ -44,7 +44,7 @@ public class AsyncGetUserInfoActivity extends AsyncPostBaseActivity {
             mailEtxt.setText(mail);
             birthEtxt.setText(birth);
 
-            String ip = "192.168.2.103";
+            String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
             Picasso.with(activity.getApplicationContext())
                     .load("http://" + ip + ":8080/trendpass/DisplayImage?name="+userIcon)
                     .resize(500, 500)
