@@ -43,9 +43,7 @@ public class LoginViewModel extends ViewModel implements AsyncTaskCallbackListen
     public void login(String username, String password, Activity activity) {
         // can be launched in a separate asynchronous job
         try {
-
-            String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
-            //String ip = "localhost";
+            String ip= "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
             new AsyncLoginActivity(activity, LoginViewModel.this)
                     .execute(new URL("http://" + ip + ":8080/trendpass/AuthServlet?email=" + username + "&password=" + password));
         } catch (MalformedURLException e) {

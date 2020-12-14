@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,27 +43,46 @@ public class DispSpotListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_disp_spot_list);
 
-        //　ユーザーIDを取得
-        SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
-        String userId = loginData.getString("userId", "");
+        //タブの下線を左にずらす
+        View tabBar = findViewById(R.id.tabBar);
+        animateTranslationStart(tabBar);
 
-        try {
-            String ip= getString(R.string.ip);
-            new AsyncDispSpotListActivity(DispSpotListActivity.this)
-                    .execute(new URL("http://"+ip+":8080/trendpass/SpotListServlet?userId=" + userId));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        //ランキングボタンを押せないようにする
+        final Button rankingBtn = findViewById(R.id.dispRankingBtn);
+        rankingBtn.setEnabled(false);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(DispSpotListActivity.this);
+
+        @SuppressLint("RestrictedApi")
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setPriority(
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        getRanking();
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-        Button rankingBtn = findViewById(R.id.dispRankingBtn);
+
+        final Button rankingBtn = findViewById(R.id.dispRankingBtn);
+        final Button dispPassBtn = findViewById(R.id.dispPassBtn);
+
         rankingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //タブの下線切り替え
+                View tabBar = findViewById(R.id.tabBar);
+                animateTranslationXRight(tabBar);
+
+                //ランキングボタンを押せなくし、色を青に
+                rankingBtn.setEnabled(false);
+                rankingBtn.setTextColor(Color.parseColor("#2196F3"));
+
+                //すれちがいボタンを押せるようにし、色を灰色に
+                dispPassBtn.setEnabled(true);
+                dispPassBtn.setTextColor(Color.parseColor("#5E5E5E"));
+
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(DispSpotListActivity.this);
 
                 @SuppressLint("RestrictedApi")
@@ -72,11 +93,23 @@ public class DispSpotListActivity extends AppCompatActivity {
             }
         });
 
-        Button dispPassBtn = findViewById(R.id.dispPassBtn);
         dispPassBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+
+                    //タブの下線切り替え
+                    View tabBar = findViewById(R.id.tabBar);
+                    animateTranslationXLeft(tabBar);
+
+                    //すれちがいボタンを押せなくし、色を青に
+                    dispPassBtn.setEnabled(false);
+                    dispPassBtn.setTextColor(Color.parseColor("#2196F3"));
+
+                    //ランキングボタンを押せるようにし、色を灰色に
+                    rankingBtn.setEnabled(true);
+                    rankingBtn.setTextColor(Color.parseColor("#5E5E5E"));
+
                     //　ユーザーIDを取得
                     SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
                     String userId = loginData.getString("userId", "");
@@ -207,5 +240,38 @@ public class DispSpotListActivity extends AppCompatActivity {
 
                             }
                         });
+    }
+    private void animateTranslationStart( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, -542 );
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 0 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+    private void animateTranslationXRight( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, -542 );
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 300 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+    private void animateTranslationXLeft( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, 542);
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 300 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
     }
 }

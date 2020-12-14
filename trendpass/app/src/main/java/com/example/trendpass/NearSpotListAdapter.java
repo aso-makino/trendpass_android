@@ -88,7 +88,7 @@ public class NearSpotListAdapter extends BaseAdapter {
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "192.168.2.103";
+        String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 spotImageList[number]);

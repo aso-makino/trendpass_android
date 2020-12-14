@@ -1,13 +1,19 @@
 package com.example.trendpass;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -47,7 +53,8 @@ public class ReviewDetailActivity extends AppCompatActivity {
         // intentで受け取ったものを取り出す
         spotId = intent.getStringExtra("spotId");
         reviewNumber = intent.getStringExtra("reviewNumber");
-        int reviewRating = intent.getIntExtra("rating",0);
+        String reviewRatingStr = intent.getStringExtra("rating");
+        int reviewRating = Integer.parseInt(reviewRatingStr);
         String reviewContent = intent.getStringExtra("reviewContent");
         String reviewImage = intent.getStringExtra("reviewImage");
         String spotName = intent.getStringExtra("spotName");
@@ -94,6 +101,34 @@ public class ReviewDetailActivity extends AppCompatActivity {
         //口コミ内容
         TextView textView = findViewById(R.id.reviewContent);
         textView.setText(reviewContent);
+
+        //画像タップ時に拡大
+        final ImageView reviewImageV = (ImageView)findViewById(R.id.spotImg);
+        reviewImageV.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ImageView imageView = new ImageView(ReviewDetailActivity.this);
+                Bitmap bitmap = ((BitmapDrawable)reviewImageV.getDrawable()).getBitmap();
+                imageView.setImageBitmap(bitmap);
+                // ディスプレイの幅を取得する（API 13以上）
+                Display display =  getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+
+                float factor =  width / bitmap.getWidth();
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                // ダイアログを作成する
+                Dialog dialog = new Dialog(ReviewDetailActivity.this);
+                // タイトルを非表示にする
+                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(imageView);
+                dialog.getWindow().setLayout((int)(bitmap.getWidth()*factor), (int)(bitmap.getHeight()*factor));
+                // ダイアログを表示する
+                dialog.show();
+            }
+        });
 
     }
 

@@ -1,13 +1,22 @@
 package com.example.trendpass;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.Path;
+import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +34,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import android.view.View.OnClickListener;
 import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
@@ -33,11 +43,17 @@ import java.util.Locale;
 
 public class MyPageActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
 
+        //タブの下線を左にずらす
+        View tabBar = findViewById(R.id.tabBar);
+        animateTranslationStart(tabBar);
+
+        //設定ボタン表示
         Picasso.with(this)
                 .load(R.drawable.settings)
                 .fit()
@@ -57,16 +73,61 @@ public class MyPageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        //画像タップ時に拡大
+        final ImageView usericon = (ImageView)findViewById(R.id.user_icon);
+        usericon.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                ImageView imageView = new ImageView(MyPageActivity.this);
+                Bitmap bitmap = ((BitmapDrawable)usericon.getDrawable()).getBitmap();
+                imageView.setImageBitmap(bitmap);
+                // ディスプレイの幅を取得する（API 13以上）
+                Display display =  getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+
+                float factor =  width / bitmap.getWidth();
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                // ダイアログを作成する
+                Dialog dialog = new Dialog(MyPageActivity.this);
+                // タイトルを非表示にする
+                dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+                dialog.setContentView(imageView);
+                dialog.getWindow().setLayout((int)(bitmap.getWidth()*factor), (int)(bitmap.getHeight()*factor));
+                // ダイアログを表示する
+                dialog.show();
+            }
+        });
+
     }
 
     protected void onResume() {
         super.onResume();
 
-        Button dispReviewBtn = findViewById(R.id.dispRankingBtn);
+        final Button dispReviewBtn = findViewById(R.id.dispRankingBtn);
+        final Button dispSpotBtn = findViewById(R.id.dispPassBtn);
+
+        //最初は口コミが表示されているので、口コミボタンを押せないようにする
+        dispReviewBtn.setEnabled(false);
+
         dispReviewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    //タブの下線切り替え
+                    View tabBar = findViewById(R.id.tabBar);
+                    animateTranslationXRight(tabBar);
+
+                    //口コミボタンを押せなくし、色を青に
+                    dispReviewBtn.setEnabled(false);
+                    dispReviewBtn.setTextColor(Color.parseColor("#2196F3"));
+
+                    //スポットボタンを押せるようにし、色を灰色に
+                    dispSpotBtn.setEnabled(true);
+                    dispSpotBtn.setTextColor(Color.parseColor("#5E5E5E"));
+
                     //　ユーザーIDを取得
                     SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
                     String userId = loginData.getString("userId", "");
@@ -81,11 +142,22 @@ public class MyPageActivity extends AppCompatActivity {
             }
         });
 
-        Button dispSpotBtn = findViewById(R.id.dispPassBtn);
         dispSpotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    //タブの下線切り替え
+                    View tabBar = findViewById(R.id.tabBar);
+                    animateTranslationXLeft(tabBar);
+
+                    //スポットボタンを押せなくし、色を青に
+                    dispSpotBtn.setEnabled(false);
+                    dispSpotBtn.setTextColor(Color.parseColor("#2196F3"));
+
+                    //口コミボタンを押せるようにし、色を灰色に
+                    dispReviewBtn.setEnabled(true);
+                    dispReviewBtn.setTextColor(Color.parseColor("#5E5E5E"));
+
                     //　ユーザーIDを取得
                     SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
                     String userId = loginData.getString("userId", "");
@@ -191,6 +263,39 @@ public class MyPageActivity extends AppCompatActivity {
         });
 
 
+    }
+    private void animateTranslationStart( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, -542 );
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 0 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+    private void animateTranslationXRight( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, -542 );
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 300 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+    private void animateTranslationXLeft( View target ) {
+
+        // translationXプロパティを0fから200fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "translationX", 0f, 542);
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 300 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
     }
 
 
