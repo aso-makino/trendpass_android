@@ -1,19 +1,19 @@
 package com.example.trendpass.ui.login;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
 import android.app.Activity;
 import android.util.Patterns;
 import android.widget.TextView;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import com.example.trendpass.R;
 import com.example.trendpass.async.AsyncLoginActivity;
 import com.example.trendpass.data.AsyncTaskCallbackListener;
 import com.example.trendpass.data.LoginRepository;
 import com.example.trendpass.data.Result;
 import com.example.trendpass.data.model.LoggedInUser;
-import com.example.trendpass.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,7 +43,9 @@ public class LoginViewModel extends ViewModel implements AsyncTaskCallbackListen
     public void login(String username, String password, Activity activity) {
         // can be launched in a separate asynchronous job
         try {
-            String ip= "192.168.2.103";
+
+            String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
+            //String ip = "localhost";
             new AsyncLoginActivity(activity, LoginViewModel.this)
                     .execute(new URL("http://" + ip + ":8080/trendpass/AuthServlet?email=" + username + "&password=" + password));
         } catch (MalformedURLException e) {

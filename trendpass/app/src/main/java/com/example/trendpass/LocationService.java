@@ -27,12 +27,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
 
 import static com.example.trendpass.DispMapActivity.running;
 import static com.example.trendpass.DispMapActivity.saveName;
@@ -62,6 +61,8 @@ public class LocationService extends IntentService implements LocationListener {
     public static double serviceLatitude = 0.0;
     public static double serviceLongitude = 0.0;
     public static String servicelocationName;
+
+    Timer timer = new Timer();
     public LocationService(String location) {
         super(location);
         // TODO 自動生成されたコンストラクター・スタブ
@@ -193,19 +194,18 @@ public class LocationService extends IntentService implements LocationListener {
                //緯度・経度取得
                serviceLatitude  = location.getLatitude();
                serviceLongitude = location.getLongitude();
-               //位置情報を一時的に記憶
-               LatLng stayLocation = new LatLng(serviceLatitude,serviceLongitude);
 
+               String getTime = null;
                //時間計測
-               SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm", Locale.JAPAN);
-               String getTime = sdf.format(location.getTime());
+               SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss", Locale.JAPAN);
+               getTime = sdf.format(location.getTime());
 
 
                //緯度・経度から住所を取得する
                Geocoder geocoder = new Geocoder(this, Locale.JAPAN);
                List<Address> addresses = null;
                try {
-                   strBuf = new StringBuffer();
+                   StringBuffer strBuf = new StringBuffer();
                    addresses = geocoder.getFromLocation(serviceLatitude,serviceLongitude, 1);
 
                    //逆ジオコーディング
@@ -216,8 +216,6 @@ public class LocationService extends IntentService implements LocationListener {
                        if(addresses.get(0).getSubAdminArea()!=null) {
                            strBuf.append(addresses.get(0).getSubAdminArea());//郡にあたる場所
                        }
-
-
                        strBuf.append(addresses.get(0).getLocality());    //市区町村取得
                        strBuf.append(addresses.get(0).getThoroughfare());    //〇〇丁目
                        strBuf.append(addresses.get(0).getSubThoroughfare()+"番");    //〇〇番
@@ -249,44 +247,6 @@ public class LocationService extends IntentService implements LocationListener {
             Thread.currentThread().interrupt();
         }
     }
-
-    public String getLocationName(double latitude,double longitude) {
-        String returnLocationName;
-
-        //error//
-        Geocoder geocoder = new Geocoder(this, Locale.JAPAN );
-        List<Address> addresses = null;
-        try {
-             returnLocationName = "";
-
-            strBuf = new StringBuffer();
-            addresses = geocoder.getFromLocation(latitude,longitude, 1);
-
-            //逆ジオコーディング
-            if (!addresses.isEmpty()) {
-
-                strBuf.append(addresses.get(0).getAdminArea());   //都市名取得
-
-                if(addresses.get(0).getSubAdminArea()!=null) {
-                    strBuf.append(addresses.get(0).getSubAdminArea());//郡にあたる場所
-                }
-
-                strBuf.append(addresses.get(0).getLocality());    //市区町村取得
-                strBuf.append(addresses.get(0).getThoroughfare());    //〇〇丁目
-                strBuf.append(addresses.get(0).getSubThoroughfare()+"番");    //〇〇番
-                strBuf.append(addresses.get(0).getFeatureName());    //〇〇号
-
-                returnLocationName = strBuf.toString();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            e.getMessage();
-            return null;
-        }
-        return returnLocationName;
-    }
-
-
 
 
     /*
@@ -320,7 +280,8 @@ public class LocationService extends IntentService implements LocationListener {
 
         System.out.println("saveLocationメソッド："+ saveName);
 
-        SharedPreferences data = getSharedPreferences(saveName, MODE_PRIVATE);
+        //ファイル名を保存名にする
+        SharedPreferences data = getSharedPreferences("saveName", MODE_PRIVATE);
         SharedPreferences.Editor editor = data.edit();
 
         //キーと値を保存する

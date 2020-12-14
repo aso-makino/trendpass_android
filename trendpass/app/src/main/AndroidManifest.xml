@@ -41,7 +41,6 @@
         <activity android:name=".SampleMainActivity" />
         <activity android:name=".MyPageActivity" />
         <activity android:name=".DispMapActivity"/>
-        <activity android:name=".async.AsyncBaseActivity"/>
         <activity android:name=".InsertReviewActivity"/>
         <activity android:name=".SignUpCompleteActivity" />
         <activity android:name=".SignUpConfirmActivity" />
@@ -67,11 +66,12 @@
 
             </intent-filter>
         </activity>
-        <uses-library android:name="com.google.android.maps" />
 
-        <activity android:name=".async.AsyncBaseActivity"> </activity>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
-        <activity android:name=".InsertReviewActivity"> </activity>
+<!--        <uses-library android:name="com.google.android.maps" />-->
 
         <service android:name=".LocationService"/>
         <!--
@@ -83,9 +83,9 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
 <!--        APIキーの設定-->
-<!--        <meta-data-->
-<!--            android:name="com.google.android.geo.API_KEY"-->
-<!--            android:value="@string/google_maps_key" />-->
+       <meta-data
+           android:name="com.google.android.geo.API_KEY"
+           android:value="@string/google_maps_key" />
     </application>
 
 </manifest>

@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,11 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -29,6 +26,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.trendpass.async.AsyncSetPositionActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,11 +39,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 
@@ -74,10 +76,10 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     public static boolean running = false;
     public static String spotName;
     public static String saveName = null;
-    public static String userId = "0000001";
+    public static String userId;
 
-    private double dispMapLatitude = 0.0;
-    private double dispMapLongitude = 0.0;
+    private double dispMapLatitude = serviceLatitude;
+    private double dispMapLongitude = serviceLongitude;
     //ソート項目
     private boolean isPopular = false;
     private String genre;
@@ -93,6 +95,11 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        //　ユーザーIDを取得
+        SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
+        userId = loginData.getString("userId", "");
+
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -140,6 +147,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     public void onResume() {
         super.onResume();
 
+
+
         // isProviderEnabledはWi-Fiから位置情報を取得できるか確認するメソッド
         if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -154,6 +163,21 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
             mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
         }
+        /*
+        //接続
+        try {
+            String ip = getString(R.string.ip);
+            System .out .println();
+            new AsyncSpotListActivity(DispMapActivity.this)
+                    .execute(new URL("http://" + ip + ":8080/trendpass/SpotListServlet?latitude="+serviceLatitude
+                            + "&longitude="+serviceLongitude+"&userId="+userId));
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+
+        }
+
+         */
 
 
         final EditText editText = new EditText(this);
@@ -172,11 +196,31 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                //保存名(位置情報の保存に使用する)
-                                saveName = editText.getText().toString();
+                                //テスト用
+                                SharedPreferences restore_info_prefs = getSharedPreferences("DataStore", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor restore_info = restore_info_prefs.edit();
+                                //まずはxmlの内部データ数を取得
+                                int count = restore_info_prefs.getInt("count", 0);
+                                // テスト用にデータを挿入
+                                //Sony 702SO Android9,API28,com.example.trendpass.shared_pref
+                                restore_info.putInt("count", count += 1);
+                                restore_info.putString("address"+count, saveName);
+                                restore_info.putString("date"+count, "2020/12/10");
+                                restore_info.putString("memo"+count, "てすと");
+                                restore_info.putString("latitude"+count, String.format("%.4f", dispMapLatitude));
+                                System.out.println("てすと" + dispMapLatitude);
+                                restore_info.putString("longitude"+count, String.format("%.4f", dispMapLongitude));
+                                System.out.println("てすと" + dispMapLongitude);
 
+                                restore_info.apply();
+                                restore_info.commit();
+                                if (editText.length() > 0) {
+                                    editText.getText().clear();
+                                }
                             }
+
                         })
+
                         // いいえボタンの処理
                         .setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
                             @Override
@@ -274,173 +318,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
             }
         });
-
-            //ヘッダー部分
-            // ジャンルドロップダウン
-            final ArrayAdapter<String> genreAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            genreAdapter.add("ジャンルを選択してください");
-            genreAdapter.add("飲食店");
-            genreAdapter.add("教育機関");
-            Spinner genreSpinner = (Spinner) findViewById(R.id.genreSpinner);
-            // SpinnerにAdapterを設定
-            genreSpinner.setAdapter(genreAdapter);
-            //ソートを選択した時の処理
-            genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //ソートを選択した時の処理
-                    if(!String.valueOf(adapterView.getSelectedItem()).equals("ジャンルを選択してください")) {
-                        //選択した値を取得する
-                        genre = (String) adapterView.getSelectedItem();
-                        System.out.println("ジャンル：" + genre);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    //何も選択されなかった場合は何もしない
-                    return;
-                }
-            });
-
-            //性別ドロップダウン
-            // Adapterの作成
-            final ArrayAdapter<String> sexAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            sexAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Adapterにアイテムを追加
-            sexAdapter.add("性別を選択してください");
-            sexAdapter.add("男");
-            sexAdapter.add("女");
-            sexAdapter.add("未");
-            Spinner sexSpinner = (Spinner) findViewById(R.id.sexSpinner);
-
-            // SpinnerにAdapterを設定
-            sexSpinner.setAdapter(sexAdapter);
-            //ソートを選択した時の処理
-            sexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //ソートを選択した時の処理
-                    if (!String.valueOf(adapterView.getSelectedItem()).equals("性別を選択してください") ) {
-                        //選択した値を取得する
-                        sex = (String) adapterView.getSelectedItem();
-                        //確認
-                        System.out.println("性別：" + sex);
-                    }
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    //何も選択されなかった場合は何もしない
-                    return;
-                }
-            });
-
-            //距離ドロップダウン
-            // Adapterの作成
-            final ArrayAdapter<String> distAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            distAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Adapterにアイテムを追加
-            distAdapter.add("距離を選択してください");
-            distAdapter.add("0.5kmから1.0km");
-            distAdapter.add("1.0kmから1.5km");
-            distAdapter.add("1.5kmから2.0km");
-            Spinner distSpinner = (Spinner) findViewById(R.id.distSpinner);
-
-            // SpinnerにAdapterを設定
-            distSpinner.setAdapter(distAdapter);
-            //ソートを選択した時の処理
-            distSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l){
-                    //ソートを選択した時の処理
-                    if (!String.valueOf(adapterView.getSelectedItem()).equals("距離を選択してください")) {
-                        //選択した値を取得する
-                        String item = (String) adapterView.getSelectedItem();
-                        //最小距離を取得する
-                        double fromMinDist = Double.parseDouble(String.valueOf(Integer.parseInt(item.substring(0,1))));
-                        double backMinDist = Double.parseDouble(String.valueOf(Integer.parseInt(item.substring(2,3))) )  / 10;
-                        minDist =  fromMinDist +  backMinDist ;
-
-                        //最大距離を取得する
-                        double fromMaxDist = Double.parseDouble(String.valueOf(Integer.parseInt( item.substring(7,8) ) ) ) ;
-                        double backMaxDist = Double.parseDouble(String.valueOf(Integer.parseInt( item.substring(9,10))  ) ) / 10;
-                        maxDist = fromMaxDist + backMaxDist;
-                        //確認
-                        System.out.printf("%.1fkmから%.1fkmまで\n", minDist, maxDist);
-                    }
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    //何も選択されなかった場合は何もしない
-                    return;
-                }
-            });
-
-            //世代ドロップダウン
-            // Adapterの作成
-            final ArrayAdapter<String> generationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            generationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Adapterにアイテムを追加
-            generationAdapter.add("年代を選択してください");
-            generationAdapter.add("10代");
-            generationAdapter.add("20代");
-            generationAdapter.add("30代");
-            Spinner generationSpinner = (Spinner) findViewById(R.id.generationSpinner);
-
-            // SpinnerにAdapterを設定
-            generationSpinner.setAdapter(generationAdapter);
-            //ソートを選択した時の処理
-            generationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //ソートを選択した時の処理
-                    if(!String.valueOf(adapterView.getSelectedItem()).equals("年代を選択してください") ){
-
-                        //選択した年代を数値に取得し数値に変換する
-                        String item = (String) adapterView.getSelectedItem();
-                        generation = Integer.parseInt(item.substring(0, item.indexOf("代")));
-                        //確認
-                        System.out.println(generation + "代\n");
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    //何も選択されなかった場合は何もしない
-                    return;
-                }
-            });
-
-            //人気ドロップダウン
-            // Adapterの作成
-            final ArrayAdapter<String> popularAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
-            popularAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Adapterにアイテムを追加
-            popularAdapter.add("");
-            popularAdapter.add("人気順");
-            Spinner popularSpinner = (Spinner) findViewById(R.id.popularSpinner);
-
-            // SpinnerにAdapterを設定
-            popularSpinner.setAdapter(popularAdapter);
-            popularSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    //ソートを選択した時の処理
-                    if(!String.valueOf(adapterView.getSelectedItem()).equals("人気順") ) {
-                        //人気順が選択されていたらtrueにする
-                        isPopular = true;
-                        //確認
-                        System.out.println(isPopular);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-                    //何も選択されなかった場合は何もしない
-                    return;
-                }
-            });
 
         /*
         try {
@@ -616,13 +493,25 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                 @Override
                 public void onLocationChanged (Location location){
 
+
                     //緯度
                     dispMapLatitude = location.getLatitude();
                     //経度
                     dispMapLongitude = location.getLongitude();
 
 
+
+                    //緯度・経度取得
+                    dispMapLatitude  =( Math.floor( (location.getLatitude() * 10000000) ) / 10000000 );
+                    dispMapLongitude = ( Math.floor( (location.getLongitude() * 10000000) ) / 10000000 );
+
+
+
+
+
                     latlng = new LatLng(dispMapLatitude, dispMapLongitude);
+                    //確認
+                    System.out.println(latlng);
 
                     CameraPosition cameraPos = new CameraPosition.Builder()
                             .target(latlng).zoom(15.0f)
@@ -653,7 +542,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                 @Override
                 public void onMapReady (GoogleMap googleMap){
                     mMap = googleMap;
-
+                    /*
                     //jsonファイルを読み込みファイルを読み込みマップのUIを変える
                     try {
                         // Customise the styling of the base map using a JSON object defined
@@ -668,7 +557,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     } catch (Resources.NotFoundException e) {
                         Log.e(TAG, "Can't find style. Error: ", e);
                     }
-
+                    */
                     // MyLocationレイヤーを有効に
                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         // TODO: Consider calling
@@ -698,7 +587,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                                 // camera 移動
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curr, 10));
                                 CameraUpdate cUpdate = CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(serviceLatitude, serviceLongitude), 12);
+                                        new LatLng(latitude, longitude), 12);
 
                                 mMap.moveCamera(cUpdate);
 
@@ -740,7 +629,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             latlng = new LatLng(dispMapLatitude, dispMapLongitude);
 
 
-                            String str = String.format(Locale.JAPAN, "%s", "tapLocation");
+                            String str = String.format(Locale.JAPAN, "%s", "タッチしたばしょ");
 
 
                             //マップにマーカーをセットする
@@ -830,32 +719,32 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     public void onReceive(Context context, Intent intent) {
 
                         Bundle extras    = intent.getExtras();
-                        String getLocationName = extras.getString("location");
-                        String getTime   = extras.getString("getTime");
                         double latitude  = extras.getDouble("latitude");
                         double longitude = extras.getDouble("longitude");
 
-
-                        System.out.println("レシーバーの処理です");
-                        System.out.println("現在地:"+getLocationName+"時間："+getTime+"緯度:"+latitude+
-                                            "経度："+longitude);
-                        /*
+                        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                        final Date date = new Date(System.currentTimeMillis());
+                        String getTime = df.format(date);
                         //接続
                         try {
                             String ip = getString(R.string.ip);
-                            System .out .println();
-                            new AsyncSpotListActivity(DispMapActivity.this)
-                                    .execute(new URL("http://" + ip + ":8080/trendpass/SpotListServlet?latitude="+latitude
-                                            + "&longitude="+longitude+"&userId="+userId));
+
+                            System.out.println("http://" + ip + ":8080/trendpass/SetPositionServlet?latitude="+latitude
+                                    + "&longitude="+longitude+"&userId="+userId+"&stayStart="+getTime);
+
+                            new AsyncSetPositionActivity(DispMapActivity.this)
+                                    .execute(new URL("http://" + ip + ":8080/trendpass/SetPositionServlet?latitude="+latitude
+                                            + "&longitude="+longitude+"&userId="+userId+"&stayStart="+getTime ) ) ;
 
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
-                            finish();
+
                         }
 
-                         */
 
                     }
+
+
 
                 }
             }
