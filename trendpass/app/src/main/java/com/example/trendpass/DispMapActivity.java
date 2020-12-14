@@ -235,19 +235,22 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-
         //footerの生成
         ImageButton mapButton = findViewById(R.id.mapbtn);
         ImageButton insertButton = findViewById(R.id.insertbtn);
         ImageButton mapListButton = findViewById(R.id.listbtn);
         ImageButton userButton = findViewById(R.id.userbtn);
 
+
+
+
+
         //ユーザーボタンをタッチした時の処理
         userButton.setOnClickListener(new View.OnClickListener() {
             @Override
             //ボタンタッチしてユーザー設定画面へ
             public void onClick(View view) {
-                //設定画面へ
+                //マイページ画面へ
                 Intent intent = new Intent(DispMapActivity.this, MyPageActivity.class);
                 startActivity(intent);
             }
@@ -260,28 +263,13 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             public void onClick(View view) {
 
                 new AlertDialog.Builder(DispMapActivity.this)
-                        .setPositiveButton("現在地からスポット投稿", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-
-                                ////////////////////////////
-                                //現在地周辺スポット一覧画面へ
-                                Intent intent = new Intent(DispMapActivity.this, DispMapActivity.class);
-                                startActivity(intent);
-                                Log.v("Alert", "スポット一覧へ");
-                                ///////////////////////////
-                            }
-                        })
-
                         .setNeutralButton("メモしたスポットから投稿", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-
                                 ////////////////////////////
                                 //位置情報履歴画面へ
-                                Intent intent = new Intent(DispMapActivity.this,InsertReviewActivity.class);
+                                Intent intent = new Intent(DispMapActivity.this,NearBySpotsListActivity.class);
                                 startActivity(intent);
 
                             }
@@ -293,8 +281,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             public void onClick(DialogInterface dialog, int which) {
                                 ////////////////////////////
                                 //口コミ投稿画面へ
-//                                Intent intent = new Intent(DispMapActivity.this, InsertReviewActivity.class);
-//                                startActivity(intent);
+                                Intent intent = new Intent(DispMapActivity.this, NearSpotListActivity.class);
+                                startActivity(intent);
                             }
                         })
                         .create()
@@ -308,39 +296,24 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             @Override
             //ボタンタッチスポット一覧表示画面へ遷移する
             public void onClick(View view) {
-
-
-                    ///////////////////////////
-                    //現在地周辺スポット一覧画面へ
-                    Intent intent = new Intent(DispMapActivity.this, DispMapActivity.class);
-                    startActivity(intent);
-                    Log.v("Alert", "スポット一覧へ");
-
+                ///////////////////////////
+                //現在地周辺スポット一覧画面へ
+                Intent intent = new Intent(DispMapActivity.this, DispSpotListActivity.class);
+                startActivity(intent);
+                Log.v("Alert", "スポット一覧へ");
             }
         });
 
-        /*
-        try {
-            //ソート選択した５秒後にデータ送信
-            Thread.sleep(5000);
-
-            try {
-
-                String ip = getString(R.string.ip);
-                new AsyncSpotListActivity(DispMapActivity.this)
-                        .execute(new URL("http://" + ip + ":8080/trendpass/SortSpotListServlet?genre="+genre
-                                + "&sex=" + sex + "&userId=" + userId + "&isPopular=" + isPopular
-                                + "&minDist=" + minDist + "&maxDist=" + maxDist + "&generation=" +  generation
-                        ));
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
+        //マップボタンをタッチした時の処理
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            //ボタンタッチしてユーザー設定画面へ
+            public void onClick(View view) {
+                //設定画面へ
+                Intent intent = new Intent(DispMapActivity.this, DispMapActivity.class);
+                startActivity(intent);
             }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-         */
+        });
 
         }
 

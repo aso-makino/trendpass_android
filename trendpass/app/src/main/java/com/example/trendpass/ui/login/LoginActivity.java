@@ -20,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.trendpass.DispMapActivity;
+import com.example.trendpass.MyPageActivity;
 import com.example.trendpass.R;
 import com.example.trendpass.SignUpActivity;
 
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
         // 保存
         editor.commit();
 
-        Intent intent = new Intent(LoginActivity.this, DispMapActivity.class);
+        Intent intent = new Intent(LoginActivity.this, MyPageActivity.class);
         startActivity(intent);
     }
 
