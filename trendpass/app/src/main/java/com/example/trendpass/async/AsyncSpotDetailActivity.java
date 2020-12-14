@@ -74,8 +74,8 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
                 public void onClick(View v) {
                     try {
 
-                        Uri location = Uri.parse("geo:"+resJson.getJSONObject("spot").getString("longitude")+","+resJson.getJSONObject("spot").getString("ratitude")+"?q="+
-                                resJson.getJSONObject("spot").getString("longitude")+","+resJson.getJSONObject("spot").getString("ratitude")+"("+resJson.getJSONObject("spot").getString("spotName")+")");
+                        Uri location = Uri.parse("geo:"+resJson.getJSONObject("spot").getString("longitude")+","+resJson.getJSONObject("spot").getString("latitude")+"?q="+
+                                resJson.getJSONObject("spot").getString("longitude")+","+resJson.getJSONObject("spot").getString("latitude")+"("+resJson.getJSONObject("spot").getString("spotName")+")");
                         System.out.println(location);
                         Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
 
@@ -112,7 +112,7 @@ public class AsyncSpotDetailActivity extends AsyncBaseActivity {
             Picasso.with(activity.getApplicationContext())
                     .load(url.replace("DispSpotDetail?spotId="+resJson.getJSONObject("spot").getString("spotId"),"DisplayImage?name="+resJson.getJSONArray("review").getJSONObject(0).getString("reviewImage")))
                     .resize(500,500)
-                    .placeholder(R.drawable.noimage)
+                    .error(R.drawable.noimage)
                     .centerInside()
                     .into((ImageView) activity.findViewById(R.id.spotImg));
 

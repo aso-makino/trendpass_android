@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
@@ -404,9 +406,20 @@ public class SignUpActivity extends AppCompatActivity {
             // 例外を受け取る
             try {
 
+                Uri selectedImage = data.getData();
+                String wholeID = DocumentsContract.getDocumentId(selectedImage);
+
+                // Split at colon, use second item in the array
+                String id = wholeID.split(":")[1];
+
+                String[] column = { MediaStore.Images.Media.DATA };
+
+                // where id is equal to
+                String sel = MediaStore.Images.Media._ID + "=?";
+
                 cursor = contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        null,null,null,null);
+                        null, sel, new String[]{ id },null);
 
                 if (cursor != null && cursor.moveToFirst()) {
                     String str =  String.format(
