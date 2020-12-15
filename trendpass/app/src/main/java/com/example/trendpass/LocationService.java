@@ -28,14 +28,12 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 
 import static com.example.trendpass.DispMapActivity.running;
 import static com.example.trendpass.DispMapActivity.saveName;
-import static com.example.trendpass.DispMapActivity.userId;
 
 /*
  *メモ
@@ -61,6 +59,10 @@ public class LocationService extends IntentService implements LocationListener {
     public static double serviceLatitude = 0.0;
     public static double serviceLongitude = 0.0;
     public static String servicelocationName;
+
+
+
+
 
     Timer timer = new Timer();
     public LocationService(String location) {
@@ -195,12 +197,6 @@ public class LocationService extends IntentService implements LocationListener {
                serviceLatitude  = location.getLatitude();
                serviceLongitude = location.getLongitude();
 
-               String getTime = null;
-               //時間計測
-               SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss", Locale.JAPAN);
-               getTime = sdf.format(location.getTime());
-
-
                //緯度・経度から住所を取得する
                Geocoder geocoder = new Geocoder(this, Locale.JAPAN);
                List<Address> addresses = null;
@@ -221,23 +217,14 @@ public class LocationService extends IntentService implements LocationListener {
                        strBuf.append(addresses.get(0).getSubThoroughfare()+"番");    //〇〇番
                        strBuf.append(addresses.get(0).getFeatureName());    //〇〇号
 
-                       servicelocationName = strBuf.toString();
 
                        //位置情報をDispMapActivityに送る
-                       sendLocation(servicelocationName,  serviceLatitude, serviceLongitude, getTime, userId);
+                       sendLocation(servicelocationName,  serviceLatitude, serviceLongitude);
                    }
                } catch (IOException e) {
                    e.printStackTrace();
                }
-               //ユーザーが保存を選択している場合は位置情報をxmlファイルに書き込む
-               if(saveName != null) {
-                   saveLocation(servicelocationName, serviceLatitude, serviceLongitude, getTime, userId, saveName);
-                   saveName = null;
-               }
-               //ログを吐く
-               Log.d("debug", "sleep: " + String.valueOf(count));
 
-               count++;
                    //60秒間停止する
                    Thread.sleep(60000);
                }
@@ -257,44 +244,14 @@ public class LocationService extends IntentService implements LocationListener {
      * @param getTime 取得時
      * @param userId ユーザーID
      */
-    private void sendLocation(String locationName,double latitude,double longitude,String getTime,String userId){
+    private void sendLocation(String locationName,double latitude,double longitude){
         Intent broadcast = new Intent();
         broadcast.putExtra("location", locationName) ;
         broadcast.putExtra("latitude", latitude);
         broadcast.putExtra("longitude", longitude);
-        broadcast.putExtra("getTime", getTime);
-        broadcast.putExtra("userId", userId);
         broadcast.setAction("DO_ACTION");
         getBaseContext().sendBroadcast(broadcast);
     }
-
-    /*
-     * 位置情報データを保存する
-     * @param StrBuf 地名
-     * @param latitude 緯度
-     * @param longitude 経度
-     * @param getTime 取得時
-     * @param userId ユーザーID
-     */
-    private void saveLocation(String servicelocationName, double latitude, double longitude, String getTime, String userId, String saveName) {
-
-        System.out.println("saveLocationメソッド："+ saveName);
-
-        //ファイル名を保存名にする
-        SharedPreferences data = getSharedPreferences("saveName", MODE_PRIVATE);
-        SharedPreferences.Editor editor = data.edit();
-
-        //キーと値を保存する
-        editor.putString("saveName",saveName );
-        editor.putString("location",servicelocationName );
-        editor.putString("latitude", String.valueOf(latitude));
-        editor.putString("longitude",String.valueOf(longitude));
-        editor.putString("getTime",getTime);
-        editor.putString("userId",userId);
-        // 書き込みを確定する
-        editor.commit();
-    }
-
     /*
      * 位置情報保存ファイルを削除する
      * @param StrBuf 地名
@@ -368,5 +325,7 @@ public class LocationService extends IntentService implements LocationListener {
         super.onDestroy();
         stopGPS();
     }
+
+
 }
 

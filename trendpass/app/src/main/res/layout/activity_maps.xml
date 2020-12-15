@@ -32,7 +32,7 @@
    <!-- footer.xml を読み込む -->
    <include
        android:id="@+id/footer"
-       layout="@layout/footer"
+       layout="@layout/map_footer"
        android:layout_width="match_parent"
        android:layout_height="87dp"
        android:layout_gravity="center_horizontal|center"

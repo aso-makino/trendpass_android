@@ -1,6 +1,7 @@
 package com.example.trendpass;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,15 +9,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -27,33 +31,42 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.trendpass.async.AsyncSetPositionActivity;
-import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 
 import static com.example.trendpass.LocationService.serviceLatitude;
 import static com.example.trendpass.LocationService.serviceLongitude;
 import static com.example.trendpass.LocationService.servicelocationName;
+import static java.lang.Math.PI;
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 //メモ
 /*↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
@@ -61,7 +74,7 @@ import static com.example.trendpass.LocationService.servicelocationName;
  * 滞在開始時間と滞在終了時間を取得する
  * 滞在時間の取得
  */
-public class DispMapActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
+public class DispMapActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static final String TAG = DispMapActivity.class.getSimpleName();
     private static final int REQUEST_MULTI_PERMISSIONS = 1001;
@@ -89,6 +102,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     private int generation = 0;
     //タイマー処理用
     private Timer timer = new Timer();
+
+    private FusedLocationProviderClient fusedLocationClient;
 
 
     @Override
@@ -131,22 +146,19 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     @Override
                     public void run() {
 
-                        //位置情報を取得するサービスを起動する
-                      //  startLocationService();
+
                     }
                 });
-                //マルチスレッド終わり
 
             }
         }).start();
 
         initLocationManager();
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
-
 
 
         // isProviderEnabledはWi-Fiから位置情報を取得できるか確認するメソッド
@@ -161,13 +173,13 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, this);
+            //mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, (LocationListener) this);
         }
         /*
         //接続
         try {
             String ip = getString(R.string.ip);
-            System .out .println();
+
             new AsyncSpotListActivity(DispMapActivity.this)
                     .execute(new URL("http://" + ip + ":8080/trendpass/SpotListServlet?latitude="+serviceLatitude
                             + "&longitude="+serviceLongitude+"&userId="+userId));
@@ -196,27 +208,23 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 
-                                //テスト用
-                                SharedPreferences restore_info_prefs = getSharedPreferences("DataStore", Context.MODE_PRIVATE);
-                                SharedPreferences.Editor restore_info = restore_info_prefs.edit();
-                                //まずはxmlの内部データ数を取得
-                                int count = restore_info_prefs.getInt("count", 0);
-                                // テスト用にデータを挿入
-                                //Sony 702SO Android9,API28,com.example.trendpass.shared_pref
-                                restore_info.putInt("count", count += 1);
-                                restore_info.putString("address"+count, saveName);
-                                restore_info.putString("date"+count, "2020/12/10");
-                                restore_info.putString("memo"+count, "てすと");
-                                restore_info.putString("latitude"+count, String.format("%.4f", dispMapLatitude));
-                                System.out.println("てすと" + dispMapLatitude);
-                                restore_info.putString("longitude"+count, String.format("%.4f", dispMapLongitude));
-                                System.out.println("てすと" + dispMapLongitude);
 
-                                restore_info.apply();
-                                restore_info.commit();
-                                if (editText.length() > 0) {
-                                    editText.getText().clear();
-                                }
+                                saveName = editText.getText().toString();
+
+                                //現在地取得の設定
+                                fusedLocationClient = LocationServices.getFusedLocationProviderClient(DispMapActivity.this);
+                                @SuppressLint("RestrictedApi")
+                                LocationRequest locationRequest = new LocationRequest();
+                                locationRequest.setPriority(
+
+                                        LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+                                memo();
+                                //複数回メモできるようにする処理
+                                ViewGroup viewGroup = (ViewGroup) editText.getParent();
+                                viewGroup.removeView(editText);
+
+
                             }
 
                         })
@@ -240,10 +248,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
         ImageButton insertButton = findViewById(R.id.insertbtn);
         ImageButton mapListButton = findViewById(R.id.listbtn);
         ImageButton userButton = findViewById(R.id.userbtn);
-
-
-
-
 
         //ユーザーボタンをタッチした時の処理
         userButton.setOnClickListener(new View.OnClickListener() {
@@ -269,7 +273,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
                                 ////////////////////////////
                                 //位置情報履歴画面へ
-                                Intent intent = new Intent(DispMapActivity.this,NearBySpotsListActivity.class);
+                                Intent intent = new Intent(DispMapActivity.this, NearBySpotsListActivity.class);
                                 startActivity(intent);
 
                             }
@@ -315,10 +319,10 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
             }
         });
 
-        }
+    }
 
     // 位置情報許可の確認、外部ストレージのPermissionにも対応できるようにしておく
-    private void checkMultiPermissions () {
+    private void checkMultiPermissions() {
         // 位置情報の Permission
         int permissionLocation = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION);
@@ -360,8 +364,8 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     // 結果の受け取り
     @Override
-    public void onRequestPermissionsResult ( int requestCode,
-                                             @NonNull String[] permissions, @NonNull int[] grantResults){
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         if (requestCode == REQUEST_MULTI_PERMISSIONS) {
             if (grantResults.length > 0) {
@@ -393,7 +397,7 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     }
 
     // LocationServiceに遷移する
-    private void startLocationService () {
+    private void startLocationService() {
         Intent intent = new Intent(DispMapActivity.this, LocationService.class);
         // API 26 以降
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -433,9 +437,10 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
     public void onPause() {
         super.onPause();
         // 電池の節約のために、端末がスリープしたら位置情報取得処理を止める
-        mLocationManager.removeUpdates(this);
+       // mLocationManager.removeUpdates(this.DispMapActivity);
 
     }
+
     //Activityが非表示のとき
     @Override
     public void onStop() {
@@ -445,16 +450,18 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
         Intent intent = new Intent(getApplication(), LocationService.class);
         stopService(intent);
 
-        System.out.println("onStopメソッド：位置情報の集計を一時停止します");
+        System.out.println("位置情報の集計を一時停止");
 
 
     }
+
     //OnStopの後、再び呼び出されたとき
     @Override
     public void onRestart() {
         super.onRestart();
 
     }
+
     //OnRestartの後の処理
     @Override
     public void onStart() {
@@ -462,132 +469,55 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
     }
 
-    /*位置情報が更新された場合に呼び出される*/
-                @Override
-                public void onLocationChanged (Location location){
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
 
-                    //緯度
-                    dispMapLatitude = location.getLatitude();
-                    //経度
-                    dispMapLongitude = location.getLongitude();
+              //jsonファイルを読み込みファイルを読み込みマップのUIを変える
+              try {
+               // Customise the styling of the base map using a JSON object defined
+               // in a raw resource file.
+                boolean success = mMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                this, R.raw.style_json));
 
-
-
-                    //緯度・経度取得
-                    dispMapLatitude  =( Math.floor( (location.getLatitude() * 10000000) ) / 10000000 );
-                    dispMapLongitude = ( Math.floor( (location.getLongitude() * 10000000) ) / 10000000 );
-
-
-
-
-
-                    latlng = new LatLng(dispMapLatitude, dispMapLongitude);
-                    //確認
-                    System.out.println(latlng);
-
-                    CameraPosition cameraPos = new CameraPosition.Builder()
-                            .target(latlng).zoom(15.0f)
-                            .bearing(0).tilt(60).build();
-
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
-
-                    CameraUpdate update = CameraUpdateFactory.newLatLng(latlng);
-                    // 表示位置を地図に反映させる。
-                    mMap.moveCamera(update);
-                }
-
-                @Override
-                public void onStatusChanged (String provider,int status, Bundle extras){
-
-                }
-
-                @Override
-                public void onProviderEnabled (String provider){
-
-                }
-
-                @Override
-                public void onProviderDisabled (String provider){
-
-                }
-
-                @Override
-                public void onMapReady (GoogleMap googleMap){
-                    mMap = googleMap;
-                    /*
-                    //jsonファイルを読み込みファイルを読み込みマップのUIを変える
-                    try {
-                        // Customise the styling of the base map using a JSON object defined
-                        // in a raw resource file.
-                        boolean success = googleMap.setMapStyle(
-                                MapStyleOptions.loadRawResourceStyle(
-                                        this, R.raw.style_json));
-
-                        if (!success) {
-                            Log.e(TAG, "Style parsing failed.");
-                        }
-                    } catch (Resources.NotFoundException e) {
+                 if (!success) {
+                   Log.e(TAG, "Style parsing failed.");
+                 }
+              } catch (Resources.NotFoundException e) {
                         Log.e(TAG, "Can't find style. Error: ", e);
-                    }
-                    */
-                    // MyLocationレイヤーを有効に
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    if (mMap != null) {
-                        // 現在地更新
-                        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                            @Override
-                            public void onMyLocationChange(Location location) {
+              }
 
 
-                                double latitude  =  serviceLatitude;
-                                double longitude =  serviceLongitude;
 
-                                LatLng curr = new LatLng(latitude, longitude);
+        double latitude = serviceLatitude;
+        double longitude = serviceLongitude;
 
-                                mMap.animateCamera(CameraUpdateFactory.newLatLng(curr));
+        LatLng curr = new LatLng(latitude, longitude);
+        CameraPosition cameraPos = new CameraPosition.Builder()
+                .target(curr).zoom(15.0f)
+                .bearing(0).build();
 
-                                mMap.moveCamera(CameraUpdateFactory.newLatLng(curr));
-                                // camera 移動
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(curr, 10));
-                                CameraUpdate cUpdate = CameraUpdateFactory.newLatLngZoom(
-                                        new LatLng(latitude, longitude), 12);
+        // MyLocationButtonを有効に
+        UiSettings settings = mMap.getUiSettings();
+        settings.setMyLocationButtonEnabled(true);
 
-                                mMap.moveCamera(cUpdate);
-
-                                mMap.getUiSettings().setZoomControlsEnabled(true);
-
-                                CameraPosition cameraPos = new CameraPosition.Builder()
-                                        .target(curr).zoom(12.0f)
-                                        .bearing(0).build();
-
-                                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPos));
+        //マーカーのセット
+        mMap.addMarker(new MarkerOptions().position(curr).title(servicelocationName).draggable(true).flat(true));
 
 
-                                // MyLocationButtonを有効に
-                                UiSettings settings = mMap.getUiSettings();
-                                settings.setMyLocationButtonEnabled(true);
-
-                                setMarker(latitude, longitude);
-                                // アイコン画像をマーカーに設定
-                                setIcon(latitude, longitude);
-
-                                //マーカーのセット
-                                mMap.addMarker(new MarkerOptions().position(curr).title(servicelocationName).draggable(true).flat(true));
-                            }
-                        });
-                    }
-
-                    //現在地表示ボタンを表示する
+        //現在地表示ボタンを表示する
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
                     mMap.setMyLocationEnabled(true);
                     //渋滞表示(赤い線を表示する)
                     mMap.setTrafficEnabled(true);
@@ -597,25 +527,22 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
                         @Override
                         public void onMapClick(LatLng tapLocation) {
-                            //位置情報が取れている
                             // tapされた位置の緯度経度
-                            latlng = new LatLng(dispMapLatitude, dispMapLongitude);
+                            LatLng location = new LatLng(tapLocation.latitude, tapLocation.longitude);
 
+                            //タッチした場所の住所を検索する
+                            String locationName = getLocationName(tapLocation.latitude,tapLocation.longitude);
+                            //現在地からの距離を計算する
+                            String fromDist = String.format(Locale.JAPAN,"現在地からの距離%skm",(calcDist(tapLocation.latitude,tapLocation.longitude) ) );
 
-                            String str = String.format(Locale.JAPAN, "%s", "タッチしたばしょ");
+                            String str = String.format(Locale.JAPAN, "%s", locationName);
 
+                            //マップをタッチすると青のピンを立てる
+                            mMap.addMarker(new MarkerOptions().position(location).title(str).snippet(fromDist).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-                            //マップにマーカーをセットする
-                            //.iconでマップをタッチしてアイコン表示する
-                            mMap.addMarker(new MarkerOptions().position(latlng).title(str).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                            );
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
+                           // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14));
 
-
-                            LatLng location = new LatLng(dispMapLatitude, dispMapLongitude);
-
-
-                            setMarker(dispMapLatitude, dispMapLongitude);
+                            setMarker(tapLocation.latitude,tapLocation.longitude);
 
                             MarkerOptions options = new MarkerOptions();
                             options.position(location);
@@ -629,18 +556,11 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                         @Override
                         public void onMapLongClick(LatLng longpushLocation) {
-                            String getLocationName;
-                            LocationService ls = new LocationService();
                             //他のピンを消す
                             mMap.clear();
 
-                           // getLocationName = ls.getLocationName(dispMapLatitude,dispMapLongitude);
-
-                            LatLng newlocation = new LatLng(dispMapLatitude,dispMapLongitude);
-                            //現在地の座標を表示する。地名を出したい
-                            mMap.addMarker(new MarkerOptions().position(newlocation).title("長押し")
-                                    .icon(BitmapDescriptorFactory
-                                            .defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                            //タッチした場所の住所を検索する
+                            LatLng newlocation = new LatLng(longpushLocation.latitude,longpushLocation.longitude);
 
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newlocation, 14));
 
@@ -648,6 +568,113 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                         }
                     });
                 }
+
+    //現在地からの距離を計算する
+    private String calcDist(double latitude,double longitude){
+        String fromDist = "";
+        final double r = 6378.137; // 赤道半径[km]
+        //距離の計算
+        String distance = String.valueOf( acos(sin(serviceLatitude * PI / 180) * sin(latitude * PI / 180) + cos(serviceLatitude * PI / 180) * cos(latitude * PI / 180) * cos(longitude * PI / 180 - longitude * PI / 180) ) / 0.0001 );
+        //インスタンスを生成
+        BigDecimal bd = new BigDecimal(distance);
+        //小数第２位以下切り捨て
+        BigDecimal bd2 = bd.setScale(2, BigDecimal.ROUND_DOWN);
+        //doubleへキャスト
+        fromDist = String.valueOf( bd2.doubleValue() );
+
+        return fromDist;
+    }
+
+
+
+    //位置情報から住所を検索する
+    private String getLocationName(double latitude,double longitude){
+            String locationName = "";
+        //緯度・経度から住所を取得する
+        Geocoder geocoder = new Geocoder(this, Locale.JAPAN);
+        List<Address> addresses = null;
+        try {
+            StringBuffer strBuf = new StringBuffer();
+            addresses = geocoder.getFromLocation(latitude,longitude, 1);
+
+            //逆ジオコーディング
+            if (!addresses.isEmpty()) {
+
+                strBuf.append(addresses.get(0).getAdminArea());   //都市名取得
+
+                if(addresses.get(0).getSubAdminArea()!=null) {
+                    strBuf.append(addresses.get(0).getSubAdminArea());//郡にあたる場所
+                }
+                if( addresses.get(0).getLocality() != null) {
+                    strBuf.append(addresses.get(0).getLocality());    //市区町村取得
+                }
+                if(addresses.get(0).getThoroughfare() != null) {
+                    strBuf.append(addresses.get(0).getThoroughfare());//〇〇丁目
+                }
+                if(addresses.get(0).getSubThoroughfare() != null) {
+                    strBuf.append(addresses.get(0).getSubThoroughfare() + "番");//〇〇番
+                }
+                if(addresses.get(0).getFeatureName() != null) {
+                    strBuf.append(addresses.get(0).getFeatureName());    //〇〇号
+                }
+                locationName = strBuf.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return locationName;
+    }
+
+    @SuppressWarnings("MissingPermission")
+    private void memo() {
+
+        fusedLocationClient.getLastLocation()
+                .addOnCompleteListener(
+                        this,
+                        new OnCompleteListener<Location>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Location> task) {
+                                if (task.isSuccessful() && task.getResult() != null) {
+                                    // ログイン情報破棄
+                                    SharedPreferences oldData = getSharedPreferences("DataStore", MODE_PRIVATE);
+
+                                    if(oldData!=null){
+                                        SharedPreferences.Editor editor = oldData.edit();
+
+                                        editor.clear();
+                                    }
+                                        Location location = task.getResult();
+
+                                        double latitude =  location.getLatitude();
+                                        double longitude = location.getLongitude();
+
+                                        final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+                                        final Date date = new Date(System.currentTimeMillis());
+                                        String getTime = df.format(date);
+
+                                        System.out.println("saveLocationメソッド："+ saveName);
+
+                                        //ファイル名を保存名にする
+                                        SharedPreferences data = getSharedPreferences("saveName", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = data.edit();
+
+                                        //キーと値を保存する
+                                        editor.putString("saveName",saveName );
+                                        editor.putString("location",servicelocationName );
+                                        editor.putString("latitude", String.valueOf(latitude));
+                                        editor.putString("longitude",String.valueOf(longitude));
+                                        editor.putString("getTime",getTime);
+                                        editor.putString("userId",userId);
+                                        // 書き込みを確定する
+                                        editor.commit();
+
+                                } else {
+                                    Log.d("debug","計測不能");
+                                    System.out.println("計測不能");
+                                }
+                            }
+                        });
+    }
 
     //マッカーのセット
                 private void setMarker ( double latitude, double longitude){
@@ -658,26 +685,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                     mMap.addMarker(markerOptions);
                 }
 
-                private void setIcon ( double latitude, double longitude){
-                    latlng = new LatLng(latitude, longitude);
-
-                    //画像の読み込み
-                    BitmapDescriptor descriptor =
-                            BitmapDescriptorFactory.fromResource(R.drawable.pin);
-
-                    // 貼り付設定
-                    GroundOverlayOptions overlayOptions = new GroundOverlayOptions();
-                    overlayOptions.image(descriptor);
-
-                    overlayOptions.anchor(0.5f, 0.5f);
-
-                    overlayOptions.position(latlng, 300f, 300f);
-
-                    // マップに貼り付け・アルファを設定
-                    GroundOverlay overlay = mMap.addGroundOverlay(overlayOptions);
-                    // 透明度
-                    overlay.setTransparency(0.0F);
-                }
 
                 /*
                  *サービスから位置情報を受けとりServletへ送信する
@@ -694,16 +701,14 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
                         Bundle extras    = intent.getExtras();
                         double latitude  = extras.getDouble("latitude");
                         double longitude = extras.getDouble("longitude");
-
                         final DateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
                         final Date date = new Date(System.currentTimeMillis());
                         String getTime = df.format(date);
+
+
                         //接続
                         try {
                             String ip = getString(R.string.ip);
-
-                            System.out.println("http://" + ip + ":8080/trendpass/SetPositionServlet?latitude="+latitude
-                                    + "&longitude="+longitude+"&userId="+userId+"&stayStart="+getTime);
 
                             new AsyncSetPositionActivity(DispMapActivity.this)
                                     .execute(new URL("http://" + ip + ":8080/trendpass/SetPositionServlet?latitude="+latitude
@@ -716,8 +721,6 @@ public class DispMapActivity extends FragmentActivity implements OnMapReadyCallb
 
 
                     }
-
-
 
                 }
             }

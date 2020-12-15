@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+
+    <View
+        android:id="@+id/tabBar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#aaaaaa"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+    <ImageButton
+        android:id="@+id/mapbtn"
+        android:background="@drawable/map"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter" />
+
+    <ImageButton
+        android:id="@+id/insertbtn"
+        android:background="@drawable/insert"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter" />
+
+    <ImageButton
+        android:id="@+id/listbtn"
+        android:background="@drawable/list"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter" />
+
+    <ImageButton
+        android:id="@+id/userbtn"
+        android:background="@drawable/user"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:scaleType="fitCenter" />
+
+    </LinearLayout>
+
+</LinearLayout>
