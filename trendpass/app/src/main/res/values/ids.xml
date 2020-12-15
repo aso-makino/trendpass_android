@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="LoginResultTxtv" type="id" />
-    <item name="InsertResultTxtv" type="id" />
+    <item name="info_image" type="id" />
 </resources>

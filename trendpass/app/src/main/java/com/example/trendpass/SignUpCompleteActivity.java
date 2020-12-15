@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.trendpass.ui.login.LoginActivity;
 import com.squareup.picasso.Picasso;
 
 public class SignUpCompleteActivity extends AppCompatActivity {
@@ -36,9 +37,9 @@ public class SignUpCompleteActivity extends AppCompatActivity {
             @Override
         public void onClick(View view) {
 
-//            Intent intent = new Intent(SignUpCompleteActivity.this, LoginActivity.class);
-//
-//            startActivity(intent);
+            Intent intent = new Intent(SignUpCompleteActivity.this, LoginActivity.class);
+
+            startActivity(intent);
         }
 
 

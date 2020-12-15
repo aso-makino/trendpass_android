@@ -17,7 +17,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncSpotListActivity extends AsyncBaseActivity {
 
@@ -55,10 +57,11 @@ public class AsyncSpotListActivity extends AsyncBaseActivity {
             int spotListSize = resJson.getInt("spotSize");
 
             String[] image = new String[spotListSize];
+            List<HashMap<String,String>> spotList = new ArrayList<>();
 
             for(int i = 0; i < spotListSize; i++){
 
-                HashMap<String,Object> spotListMap = new HashMap<String,Object>();
+                HashMap<String,String> spotListMap = new HashMap<String,String>();
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
@@ -74,14 +77,15 @@ public class AsyncSpotListActivity extends AsyncBaseActivity {
 
                 spotListMap.put("spotId",spotId);
                 spotListMap.put("spotName",spotName);
-                spotListMap.put("latitude",latitude);
-                spotListMap.put("longitude",longitude);
+                spotListMap.put("latitude",Double.toString(latitude));
+                spotListMap.put("longitude",Double.toString(longitude));
                 spotListMap.put("genreId",genreId);
                 spotListMap.put("spotImage",spotImage);
                 spotListMap.put("fromDist",fromDist);
 
                 image[i] = spotImage;
 
+                spotList.add(spotListMap);
 
                 //スポット写真をマップに表示する
                 setIcon(latitude,longitude,image);
@@ -91,11 +95,12 @@ public class AsyncSpotListActivity extends AsyncBaseActivity {
         GridView gridview = activity.findViewById(R.id.gridview);
         // BaseAdapter を継承したGridAdapterのインスタンスを生成
         // 子要素のレイアウトファイル activity_maps.xml を
-        // activity_my_page.xml に inflate するためにGridAdapterに引数として渡す
+        // activity_maps.xml に inflate するためにGridAdapterに引数として渡す
         GridAdapter adapter = new GridAdapter(
                 activity.getApplicationContext(),
                 R.layout.activity_maps,
-                image
+                image,
+                spotList
         );
 
 
@@ -116,7 +121,7 @@ public class AsyncSpotListActivity extends AsyncBaseActivity {
 
         //画像の読み込み
         BitmapDescriptor descriptor =
-                BitmapDescriptorFactory.fromResource(R.id.pin);
+                BitmapDescriptorFactory.fromResource(R.id.image);
 
         // 貼り付設定
         GroundOverlayOptions overlayOptions = new GroundOverlayOptions();

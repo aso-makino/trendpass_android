@@ -3,13 +3,13 @@
   {
     "featureType": "all",
     "stylers": [
-      { "color": "#C0C0C0" }
+      { "color": "#00000000" }
     ]
   },{
   "featureType": "road.arterial",
   "elementType": "geometry",
   "stylers": [
-    { "color": "#CCFFFF" }
+    { "color": "#00000000" }
   ]
 },{
   "featureType": "landscape",
@@ -17,5 +17,10 @@
   "stylers": [
     { "visibility": "off" }
   ]
-}
+},{
+    "featureType": "poi",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+  }
 ]

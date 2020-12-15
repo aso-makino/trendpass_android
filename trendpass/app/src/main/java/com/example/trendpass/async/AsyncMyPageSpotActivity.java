@@ -16,7 +16,9 @@ import org.json.JSONObject;
 
 import java.net.URL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
 
@@ -74,12 +76,13 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
             int spotSize = resJson.getInt("spotSize");
             final String[] image = new String[spotSize];
 
+            List<HashMap<String,String>> spotList = new ArrayList<>();
             for(int i = 0; i < spotSize; i++){
                 HashMap<String,String> spot = new HashMap<String,String>();
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
-                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
+                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("latitude");
                 longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
                 genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
                 spotImage = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotImage");
@@ -90,6 +93,8 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
                 spot.put("longitude",longitude);
                 spot.put("genreId",genreId);
                 spot.put("reviewImage",spotImage);
+
+                spotList.add(spot);
                 image[i] = spotImage;
             }
 
@@ -101,7 +106,8 @@ public class AsyncMyPageSpotActivity extends AsyncBaseActivity {
             GridAdapter adapter = new GridAdapter(
                     activity.getApplicationContext(),
                     R.layout.mypage_layout,
-                    image
+                    image,
+                    spotList
             );
 
             // gridViewにadapterをセット

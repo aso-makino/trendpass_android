@@ -1,6 +1,7 @@
 package com.example.trendpass;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ public class NearSpotListAdapter extends BaseAdapter {
     private int layoutID;
     private String[] spotNameList;
     private String[] spotImageList;
+    private String[] spotIdList;
 
     static class ViewHolder {
         ImageView spotImage;
@@ -26,7 +28,7 @@ public class NearSpotListAdapter extends BaseAdapter {
     }
 
     public NearSpotListAdapter(Context context, int itemLayoutId,
-                               String[] spotNames,String[] spotImages) {
+                               String[] spotNames,String[] spotImages, String[] spotIds) {
 
         inflater = LayoutInflater.from(context);
         layoutID = itemLayoutId;
@@ -34,11 +36,12 @@ public class NearSpotListAdapter extends BaseAdapter {
 
         spotNameList = spotNames;
         spotImageList = spotImages;
+        spotIdList = spotIds;
 
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         ViewHolder holder;
 
@@ -55,7 +58,6 @@ public class NearSpotListAdapter extends BaseAdapter {
 
         System.out.println(spotImageList[position]);
 
-        String ip ="";
                 //スポット画像
                 Picasso.with(context)
                         .load(addUrl(position))
@@ -67,18 +69,30 @@ public class NearSpotListAdapter extends BaseAdapter {
         holder.spotName.setText(spotNameList[position]);
 
 
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context,InsertReviewActivity.class);
+                intent.putExtra("spotId", spotIdList[position]);
+                intent.putExtra("spotName", spotNameList[position]);
+                intent.putExtra("spotImage", spotImageList[position]);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
+
+
         return convertView;
     }
 
     // ネットワークアクセスするURLを設定する
     private String addUrl(int number){
 
-        String ip = "";
+        String ip = "ec2-3-112-229-228.ap-northeast-1.compute.amazonaws.com";
         return String.format(Locale.US,
                 "http://" + ip + ":8080/trendpass/DisplayImage?name=%s" ,// 自分のサーバーに上げて見ましょう
                 spotImageList[number]);
     }
-
 
 
     @Override

@@ -2,7 +2,6 @@ package com.example.trendpass.async;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 
 public class AsyncBaseActivity extends  AsyncTask<URL, Void, JSONObject>  {
     protected Activity activity;
@@ -25,6 +25,7 @@ public class AsyncBaseActivity extends  AsyncTask<URL, Void, JSONObject>  {
     protected JSONObject doInBackground(URL... urls) {
 
         final URL url = urls[0];
+        System.out.println("AsyancBase:"+url);
         HttpURLConnection con = null;
 
         try {
@@ -33,9 +34,11 @@ public class AsyncBaseActivity extends  AsyncTask<URL, Void, JSONObject>  {
             con.setRequestMethod("GET");
 
             con.setInstanceFollowRedirects(false);
+            //error
             con.connect();
 
             final int statusCode = con.getResponseCode();
+            System.out.println(statusCode);
             if (statusCode != HttpURLConnection.HTTP_OK) {
                 return null;
             }

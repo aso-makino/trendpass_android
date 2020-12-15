@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
@@ -338,14 +340,7 @@ public class SignUpActivity extends AppCompatActivity {
                         });
                     }
                 }else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
-                        && pass1.equals(pass2) && pass1.length() > 128 && pass1.equals(pass2) && birth.length() <= 4 &&!date.before(birthDate)){
-                    namePermitFlg = true;
-                    mailPermitFlg = true;
-                    pass1PermitFlg = true;
-                    pass2PermitFlg = true;
-                    birthPermitFlg = true;
-
-                }else if(namePermitFlg&&mailPermitFlg&&pass1PermitFlg&&pass2PermitFlg&&birthPermitFlg){
+                        && pass1.equals(pass2) && pass1.length() < 128 && pass1.equals(pass2) && birth.length() <= 4 && !date.before(birthDate)) {
 
                     //確認画面へ遷移
                     Intent intent = new Intent(SignUpActivity.this, SignUpConfirmActivity.class);
@@ -411,9 +406,20 @@ public class SignUpActivity extends AppCompatActivity {
             // 例外を受け取る
             try {
 
+                Uri selectedImage = data.getData();
+                String wholeID = DocumentsContract.getDocumentId(selectedImage);
+
+                // Split at colon, use second item in the array
+                String id = wholeID.split(":")[1];
+
+                String[] column = { MediaStore.Images.Media.DATA };
+
+                // where id is equal to
+                String sel = MediaStore.Images.Media._ID + "=?";
+
                 cursor = contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        null,null,null,null);
+                        null, sel, new String[]{ id },null);
 
                 if (cursor != null && cursor.moveToFirst()) {
                     String str =  String.format(

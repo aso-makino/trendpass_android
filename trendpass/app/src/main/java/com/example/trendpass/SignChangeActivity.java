@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,24 +50,22 @@ public class SignChangeActivity extends AppCompatActivity {
     private boolean pass1PermitFlg;
     private boolean pass2PermitFlg;
     private boolean birthPermitFlg;
+    private String userId;
 
     private static final int REQUEST_GALLERY = 0;
     private Bitmap imgView;
     private String picturePath;//画像パス
     private Uri userIconUri;
 
-    //UseIDをデバイス内から参照
-    //　ユーザーIDを取得
-//    SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
-//    String userId = loginData.getString("userId", "");
-
-    private String userId = "0000001";//テスト用
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_change);
+
+        //　ユーザーIDを取得
+        SharedPreferences loginData = getSharedPreferences("login_data", MODE_PRIVATE);
+        userId = loginData.getString("userId", "");
 
         //async
         String ip = getString(R.string.ip);
@@ -332,36 +331,12 @@ public class SignChangeActivity extends AppCompatActivity {
                 } else if (name.length() <= 30 && mail.length() <= 256 && p.matcher(mail).find() && pass1.length() >= 8
                         && pass1.equals(pass2) && pass1.length() < 128 && pass1.equals(pass2) && birth.length() <= 4 && !date.before(birthDate)) {
 
-
-                    // bitmap(Bitmap)に画像データが入っている前提
-                    /*if(imgView != null) {
-                        ByteBuffer byteBuffer = ByteBuffer.allocate(imgView.getByteCount());
-                        imgView.copyPixelsToBuffer(byteBuffer);
-                        byte[] byteImage = byteBuffer.array();
-                    }*/
-
                     //async
                     String ip = getString(R.string.ip);
                     String postJson = "{\"userId\":\"" + userId + "\",\"userName\":\"" + name + "\",\"mail\":\"" + mail + "\",\"password\":\"" + pass2 + "\",\"sex\":\"" + sex + "\",\"birth\":\"" + birth + "\"}";
                     System.out.println(postJson);
                     AsyncSignChangeActivity asyncSignChangeActivity = new AsyncSignChangeActivity(SignChangeActivity.this);
                     asyncSignChangeActivity.execute("http://" + ip + ":8080/trendpass/SignChange",  postJson,picturePath);
-
-//                    //マイページ画面へ遷移
-//                    Intent intent = new Intent(SignChangeActivity.this, MypageActivity.class);
-
-//                    RadioButton radioButton = findViewById(checkedId);
-//                    String sex = radioButton.getText().toString();
-//
-//
-//                    intent.putExtra("name", name);
-//                    intent.putExtra("mail", mail);
-//                    intent.putExtra("pass", pass2);
-//                    intent.putExtra("sex", sex);
-//                    intent.putExtra("birth", birth);
-//                    intent.putExtra("userIcon", picturePath);
-//                    startActivity(intent);
-
 
                 }
             }
@@ -412,9 +387,20 @@ public class SignChangeActivity extends AppCompatActivity {
             // 例外を受け取る
             try {
 
+                Uri selectedImage = data.getData();
+                String wholeID = DocumentsContract.getDocumentId(selectedImage);
+
+                // Split at colon, use second item in the array
+                String id = wholeID.split(":")[1];
+
+                String[] column = { MediaStore.Images.Media.DATA };
+
+                // where id is equal to
+                String sel = MediaStore.Images.Media._ID + "=?";
+
                 cursor = contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        null,null,null,null);
+                        null, sel, new String[]{ id },null);
 
                 if (cursor != null && cursor.moveToFirst()) {
                     String str =  String.format(

@@ -1,8 +1,11 @@
 package com.example.trendpass.async;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
+
+import com.example.trendpass.ui.login.LoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +23,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class AsyncSignUpActivity extends AsyncTask<Object, Void, JSONObject> {
+public class AsyncSignUpActivity extends AsyncTask<String, Void, JSONObject> {
 
     //①USE WEEK REFERENCE
     private final Activity activity;
@@ -33,33 +36,49 @@ public class AsyncSignUpActivity extends AsyncTask<Object, Void, JSONObject> {
 
     //③バックグラウンド処理
     @Override
-    protected JSONObject doInBackground(Object... data) {
+    protected JSONObject doInBackground(String... data) {
 
         //Object配列でパラメータを持ってこれたか確認
         String url = (String) data[0];
         String description = (String) data[1];
-        String filePath = (String) data[2];
-        String filename = (String) data[5];
 
+        RequestBody requestBody = null;
         //④HTTP処理用オプジェクト作成
         OkHttpClient client = new OkHttpClient();
-
         //⑤送信用POSTデータを構築（Multipartでお願いします！）
         final String BOUNDARY = String.valueOf(System.currentTimeMillis());
         final MediaType TEXT = MediaType.parse("application/json; charset=utf-8");
-        final MediaType IMAGE = MediaType.parse((String) data[4]);
-        RequestBody requestBody = new MultipartBody.Builder(BOUNDARY)
-                .setType(MultipartBody.FORM)
-                .addPart(
-                        Headers.of("Content-Disposition", "form-data; name=Json"),
-                        RequestBody.create(TEXT, description)
-                )
-                .addFormDataPart(
-                        "userIcon",
-                        filename,
-                        RequestBody.create(IMAGE, new File(filePath))
-                )
-                .build();
+
+        if(data[2] != null) {
+            String pathName = data[2];
+            int endIndex = pathName.lastIndexOf('/'); // 最後の'/'のインデックスを検索
+            String fileName = pathName.substring(endIndex + 1); //String pathName = picturePath;
+
+            final MediaType IMAGE = MediaType.parse("image/jpeg");
+
+            requestBody = new MultipartBody.Builder(BOUNDARY)
+                    .setType(MultipartBody.FORM)
+                    .addPart(
+                            Headers.of("Content-Disposition", "form-data; name=\"description\""),
+                            RequestBody.create(TEXT, description)
+                    )
+                    .addFormDataPart(
+                            "userIcon",
+                            fileName,
+                            RequestBody.create(IMAGE, new File(data[2]))
+                    )
+                    .build();
+        }else{
+            requestBody = new MultipartBody.Builder(BOUNDARY)
+                    .setType(MultipartBody.FORM)
+                    .addPart(
+                            Headers.of("Content-Disposition", "form-data; name=\"description\""),
+                            RequestBody.create(TEXT, description)
+                    )
+                    .build();
+        }
+
+
 
         //⑥送信用リクエストを作成
         Request.Builder requestBuilder = new Request.Builder();
@@ -76,7 +95,7 @@ public class AsyncSignUpActivity extends AsyncTask<Object, Void, JSONObject> {
             Response response = call.execute();
             ResponseBody body = response.body();
             if (body != null) {
-                result = new JSONObject(body.toString());
+                result = new JSONObject(body.string());
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -94,11 +113,12 @@ public class AsyncSignUpActivity extends AsyncTask<Object, Void, JSONObject> {
         try {
             result = res.getString("result");
             if (result.equals("false")) {
-                Toast toast = Toast.makeText(activity, "更新に失敗しました", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(activity, "登録に失敗しました", Toast.LENGTH_LONG);
                 toast.show();
             } else {
-                Toast toast = Toast.makeText(activity, "更新に成功しました", Toast.LENGTH_LONG);
-                toast.show();
+                Intent intent = new Intent(activity, LoginActivity.class);
+
+                activity.startActivity(intent);
             }
         } catch (JSONException e) {
             e.printStackTrace();

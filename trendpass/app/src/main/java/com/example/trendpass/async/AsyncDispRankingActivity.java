@@ -3,7 +3,6 @@ package com.example.trendpass.async;
 import android.app.Activity;
 import android.widget.GridView;
 
-import com.example.trendpass.GridAdapter;
 import com.example.trendpass.R;
 import com.example.trendpass.RankingGridAdapter;
 
@@ -11,7 +10,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class AsyncDispRankingActivity extends AsyncBaseActivity{
     private String url = null;
@@ -29,6 +30,7 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
 
     protected void onPostExecute(JSONObject resJson) {
 
+        System.out.println(resJson);
         String spotId = "";
         String spotName = "";
         String latitude = "";
@@ -42,12 +44,13 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
             int spotSize = resJson.getInt("spotSize");
             final String[] image = new String[spotSize];
 
+            List<HashMap<String,String>> spotList = new ArrayList<>();
             for(int i = 0; i < spotSize; i++){
-                HashMap<String,String> spot = new HashMap<String,String>();
+                HashMap<String,String> spot = new HashMap<>();
 
                 spotId = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
                 spotName = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
-                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude");
+                latitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("latitude");
                 longitude = resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude");
                 genreId = resJson.getJSONArray("spotList").getJSONObject(i).getString("genreId");
                 spotImage = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotImage");
@@ -58,6 +61,8 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
                 spot.put("longitude",longitude);
                 spot.put("genreId",genreId);
                 spot.put("reviewImage",spotImage);
+
+                spotList.add(spot);
                 image[i] = spotImage;
             }
 
@@ -69,8 +74,9 @@ public class AsyncDispRankingActivity extends AsyncBaseActivity{
             // activity_main.xml に inflate するためにGridAdapterに引数として渡す
             RankingGridAdapter adapter = new RankingGridAdapter(
                     activity.getApplicationContext(),
-                    R.layout.ranking_rayout,
-                    image
+                    R.layout.ranking_layout,
+                    image,
+                    spotList
             );
 
             // gridViewにadapterをセット

@@ -37,6 +37,7 @@ public class AsyncNearSpotListActivity extends AsyncBaseActivity {
         try {
             int spotCount = Integer.parseInt(resJson.getString("spotCount"));
 
+            System.out.println(resJson);
 
             latitude = new double[spotCount];
             longitude = new double[spotCount];
@@ -44,10 +45,9 @@ public class AsyncNearSpotListActivity extends AsyncBaseActivity {
             spotId = new String[spotCount];
             spotImage = new String[spotCount];
 
-
             for (int i = 0 ; i<spotCount;i++) {
 
-                latitude[i] = Double.parseDouble(resJson.getJSONArray("spotList").getJSONObject(i).getString("ratitude"));
+                latitude[i] = Double.parseDouble(resJson.getJSONArray("spotList").getJSONObject(i).getString("latitude"));
                 longitude[i] = Double.parseDouble(resJson.getJSONArray("spotList").getJSONObject(i).getString("longitude"));
                 spotName[i] = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotName");
                 spotId[i] = resJson.getJSONArray("spotList").getJSONObject(i).getString("spotId");
@@ -62,7 +62,7 @@ public class AsyncNearSpotListActivity extends AsyncBaseActivity {
             // レイアウトファイル list_items.xml を
             // activity_main.xml に inflate するためにadapterに引数として渡す
             BaseAdapter adapter = new NearSpotListAdapter(activity.getApplicationContext(),
-                    R.layout.inner_near_spot_list, spotName,spotImage);
+                    R.layout.inner_near_spot_list, spotName,spotImage,spotId);
 
             // ListViewにadapterをセット
             listView.setAdapter(adapter);

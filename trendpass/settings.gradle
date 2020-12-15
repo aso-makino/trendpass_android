@@ -1,2 +1,3 @@
-rootProject.name='trendpass'
+include ':mysql-connector-java-8.0.11'
 include ':app'
+rootProject.name = "trendpass"
